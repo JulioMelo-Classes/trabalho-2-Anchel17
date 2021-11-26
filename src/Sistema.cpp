@@ -1,16 +1,11 @@
-#include "Sistema.h"
 #include <iostream>
 #include <sstream>
 #include <algorithm>
 
 using namespace std;
 
-#include "Sistema.h"
-#include <iostream>
-#include <sstream>
-#include <algorithm>
-
-#include "Usuario.h"
+#include "../include/Sistema.h"
+#include "../include/Usuario.h"
 
 /* COMANDOS */
 string Sistema::quit() {
@@ -18,18 +13,28 @@ string Sistema::quit() {
 }
 
 string Sistema::create_user (const string email, const string senha, const string nome) {
-	Usuario *user;
+	bool achou = false;
+	Usuario *user = new Usuario;
 
 	user -> setEmail(email);
 	user -> setSenha(senha);
 	user -> setNome(nome);
 
-	m_usuarios.push_back(user);
+	if(m_usuarios.empty()){
+		m_usuarios.push_back(user);
+		return "Usuário criado";
+	}
+	else{
+		for(int i = 0; i < m_usuarios.size(); i++){
+			if(email == m_usuarios[i] -> getEmail()){
+				return "Usuário já cadastrado";
+			}
+		}
 
-	cout<<m_usuarios.size();
-	//cout<<m_usuarios[0] -> getEmail()<<endl;
+		m_usuarios.push_back(user);
+		return "usuário criado";
+	}
 	
-	return "create_user NÃO IMPLEMENTADO";
 }
 
 std::string Sistema::delete_user (const std::string email, const std::string senha){

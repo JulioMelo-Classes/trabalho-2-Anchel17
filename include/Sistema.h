@@ -10,7 +10,7 @@
 // Sistema deve concentrar todas as operações do Concordo
 class Sistema {
 
-	std::vector<Usuario*> m_usuarios;
+	std::vector<Usuario*> m_usuarios;	//<!Vetor contendo usuários cadastrados
 
   	public:
 
