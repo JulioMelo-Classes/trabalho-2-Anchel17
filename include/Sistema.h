@@ -5,9 +5,13 @@
 #include <iostream>
 #include <map>
 
+#include "Usuario.h"
 
 // Sistema deve concentrar todas as operações do Concordo
 class Sistema {
+
+	std::vector<Usuario*> m_usuarios;
+
   	public:
 
 		/*! Encerra o funcionamento do Concordo, o programa termina ao executar este comando.

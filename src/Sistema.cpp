@@ -10,12 +10,25 @@ using namespace std;
 #include <sstream>
 #include <algorithm>
 
+#include "Usuario.h"
+
 /* COMANDOS */
 string Sistema::quit() {
   return "Saindo...";
 }
 
 string Sistema::create_user (const string email, const string senha, const string nome) {
+	Usuario *user;
+
+	user -> setEmail(email);
+	user -> setSenha(senha);
+	user -> setNome(nome);
+
+	m_usuarios.push_back(user);
+
+	cout<<m_usuarios.size();
+	//cout<<m_usuarios[0] -> getEmail()<<endl;
+	
 	return "create_user NÃO IMPLEMENTADO";
 }
 
