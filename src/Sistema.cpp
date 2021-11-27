@@ -21,8 +21,13 @@ void Sistema::teste(){
 		cout<<"Email: "<<m_usuarios[i] -> getEmail()<<endl;
 		cout<<"Senha: "<<m_usuarios[i] -> getSenha()<<endl;
 	}
-	for(auto it = m_usuariosLogados.begin(); it != m_usuariosLogados.end(); it++){
-		cout<<"ID: "<<it -> first<<" Servidor|canal: "<< it -> second.first<<"|"<< it -> second.second<<endl;
+	if(m_usuariosLogados.empty()){
+		cout<<"Não existem usuários logados"<<endl;
+	}
+	else{
+		for(auto it = m_usuariosLogados.begin(); it != m_usuariosLogados.end(); it++){
+			cout<<"ID: "<<it -> first<<" Servidor|canal: "<< it -> second.first<<"|"<< it -> second.second<<endl;
+		}
 	}
 }
 
@@ -78,9 +83,8 @@ std::string Sistema::delete_user (const std::string email, const std::string sen
 			return "Usuário deletado";
 		}
 
+		return "Usuário não cadastrado";
 	}
-
-	return "Usuário não cadastrado";
 }
 
 string Sistema::login(const string email, const string senha){
@@ -97,7 +101,15 @@ string Sistema::login(const string email, const string senha){
 }
 
 string Sistema::disconnect(int id) {
-	return "disconnect NÃO IMPLEMENTADO";
+	//ainda to fazendo
+	if(!m_usuariosLogados.empty()){
+		auto it = m_usuariosLogados.find(id);
+		m_usuariosLogados.erase(it);
+		teste();
+		return "Usuário desconectado";
+	}
+
+	return "Usuário não logado";
 }
 
 string Sistema::create_server(int id, const string nome) {
