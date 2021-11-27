@@ -12,15 +12,37 @@ string Sistema::quit() {
   return "Saindo...";
 }
 
-string Sistema::create_user (const string email, const string senha, const string nome) {
-	bool achou = false;
-	Usuario *user = new Usuario;
+//só para verificar algumas coisas, depois apago
+void Sistema::teste(){
 
-	user -> setEmail(email);
-	user -> setSenha(senha);
-	user -> setNome(nome);
+	for(int i = 0; i < m_usuarios.size(); i++){
+		cout<<"Id: "<<m_usuarios[i] -> getId()<<endl;
+		cout<<"Nome: "<<m_usuarios[i] -> getNome()<<endl;
+		cout<<"Email: "<<m_usuarios[i] -> getEmail()<<endl;
+		cout<<"Senha: "<<m_usuarios[i] -> getSenha()<<endl;
+	}
+	for(auto it = m_usuariosLogados.begin(); it != m_usuariosLogados.end(); it++){
+		cout<<"ID: "<<it -> first<<" Servidor|canal: "<< it -> second.first<<"|"<< it -> second.second<<endl;
+	}
+}
+
+string Sistema::create_user (const string email, const string senha, const string nome){
+	Usuario *user = new Usuario(email, senha, nome, m_usuarios.size()+1);
+
+	if(email == ""){
+		return "Por favor, digite um email";
+	}
+
+	if(senha == ""){
+		return "Por favor, insira uma senha";
+	}
+
+	if(nome == ""){
+		return "Por favor, digite o nome de usuário";
+	}
 
 	if(m_usuarios.empty()){
+
 		m_usuarios.push_back(user);
 		return "Usuário criado";
 	}
@@ -38,11 +60,40 @@ string Sistema::create_user (const string email, const string senha, const strin
 }
 
 std::string Sistema::delete_user (const std::string email, const std::string senha){
-	return "delete_user NÃO IMPLEMENTADO";
+	if(m_usuarios.empty()){
+		return "Não existem usuários cadastrados";
+	}
+	else{
+		for(int i = 0; i < m_usuarios.size(); i++){
+			if(email == m_usuarios[i] -> getEmail()){
+				m_usuarios.erase(m_usuarios.begin() + i);
+				
+				//isso aqui vai re-setar os Id de usuários após o usuário deletado
+				for(int j = 0; j < m_usuarios.size(); j++){
+					m_usuarios[j] -> re_setId(j+1);
+				}
+			}
+
+			teste();
+			return "Usuário deletado";
+		}
+
+	}
+
+	return "Usuário não cadastrado";
 }
 
-string Sistema::login(const string email, const string senha) {
-	return "login NÃO IMPLEMENTADO";
+string Sistema::login(const string email, const string senha){
+
+	for(int i = 0; i < m_usuarios.size(); i++){
+		if(email == m_usuarios[i] -> getEmail() && senha == m_usuarios[i] -> getSenha()){
+			m_usuariosLogados.insert({m_usuarios[i] -> getId(), {0, 0}});
+			teste();
+			return "Logado como " + m_usuarios[i] -> getEmail();
+		}
+	}
+
+	return "Usuário ou senha incorreto";
 }
 
 string Sistema::disconnect(int id) {

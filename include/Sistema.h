@@ -10,7 +10,10 @@
 // Sistema deve concentrar todas as operações do Concordo
 class Sistema {
 
-	std::vector<Usuario*> m_usuarios;	//<!Vetor contendo usuários cadastrados
+	private:
+		std::vector<Usuario*> m_usuarios;	//<!Vetor contendo referências a usuários cadastrados
+
+		std::map<int, std::pair<unsigned int, unsigned int>> m_usuariosLogados;
 
   	public:
 
@@ -18,6 +21,7 @@ class Sistema {
 			@return uma string com a mensagem "Saindo.."
 		*/
 		std::string quit();
+		void teste(); ///só para verificar se tá armazenando os usuários vou excluir isso depois
 
 		/*! Cria um usuário e retorna uma string de erro/sucesso 
 			@param email o email do usuário informado no comando create-user

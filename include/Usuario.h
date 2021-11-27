@@ -19,52 +19,42 @@ class Usuario{
     public:
 
         /**
+         * Construtor da classe Usuario
+         * @param email String contendo o email do usuário
+         * @param senha String contendo a senha do usuário
+         * @param nome String contendo o nome do usuário
+         * @param id Inteiro sem sinal contendo o Id do usuário 
+         */
+        Usuario(std::string email, std::string senha, std::string nome, unsigned int id);
+
+        /**
          * Método Getter do nome do usuário
          * @return nome do usuário
          */
-        std::string getNome(){
-            return m_nome;
-        }
-
-        /**
-         * Método Setter do nome do usuário
-         * @param nome string recebida para ser o nome do usuário
-         */
-        void setNome(std::string nome){
-            this -> m_nome = nome;
-        }
+        std::string getNome();
 
         /**
          * Método Getter do email do usuário
          * @return email do usuário
          */
-        std::string getEmail(){
-            return m_email;
-        }
-
-        /**
-         * Método Setter do email do usuário
-         * @param email String recebida para ser o nome do email do usuário
-         */
-        void setEmail(std::string email){
-            this -> m_email = email;
-        }
+        std::string getEmail();
 
         /**
          * Método Getter da senha do usuário
          * @return senha do usuário
          */
-        std::string getSenha(){
-            return m_senha;
-        }
+        std::string getSenha();
 
         /**
-         * Método Getter da senha do usuário
-         * @param senha String recebida para ser a senha do usuário
+         * Método Getter do ID do usuário
+         * @return id do usuário
          */
-        void setSenha(std::string senha){
-            this -> m_senha = senha;
-        }
+        unsigned int getId();
+
+        /**
+         * Método para re-setar o Id de usuários após o excluído
+         */
+        void re_setId(unsigned int id);
 };
 
 #endif
