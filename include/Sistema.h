@@ -6,14 +6,17 @@
 #include <map>
 
 #include "Usuario.h"
+#include "Servidor.h"
 
 // Sistema deve concentrar todas as operações do Concordo
 class Sistema {
 
 	private:
-		std::vector<Usuario*> m_usuarios;	//<!Vetor contendo referências a usuários cadastrados
+		std::vector<Usuario*> m_usuarios;	//<!Vector contendo referências a usuários cadastrados
 
-		std::map<int, std::pair<unsigned int, unsigned int>> m_usuariosLogados;
+		std::vector<Servidor> servidores;	//<!Vector contendo os servidores criados
+
+		std::map<int, std::pair<unsigned int, unsigned int>> m_usuariosLogados;		//<!mapeia usuários logados
 
   	public:
 

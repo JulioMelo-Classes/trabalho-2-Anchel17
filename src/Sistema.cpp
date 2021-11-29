@@ -6,6 +6,7 @@ using namespace std;
 
 #include "../include/Sistema.h"
 #include "../include/Usuario.h"
+#include "../include/Servidor.h"
 
 /* COMANDOS */
 string Sistema::quit() {
@@ -65,10 +66,26 @@ string Sistema::create_user (const string email, const string senha, const strin
 }
 
 std::string Sistema::delete_user (const std::string email, const std::string senha){
+	unsigned int l_id;
+
 	if(m_usuarios.empty()){
 		return "Não existem usuários cadastrados";
 	}
 	else{
+
+		//precisa dar uma polida, só não deleta se o USUÁRIO RECÉM LOGADO TENTAR DELETAR A SI MESMO
+		for(int i = 0; i < m_usuarios.size(); i++){
+			if(m_usuarios[i] -> getEmail() == email){
+				l_id = m_usuarios[i] -> getId();
+			}
+
+			auto it = m_usuariosLogados.find(l_id);
+			
+			if(it == m_usuariosLogados.end()){
+				return "Por favor, desconecte o usuário para deletá-lo";
+			}
+		}
+
 		for(int i = 0; i < m_usuarios.size(); i++){
 			if(email == m_usuarios[i] -> getEmail()){
 				m_usuarios.erase(m_usuarios.begin() + i);
@@ -101,8 +118,8 @@ string Sistema::login(const string email, const string senha){
 }
 
 string Sistema::disconnect(int id) {
-	//ainda to fazendo
-	if(!m_usuariosLogados.empty()){
+	//parece que tá funcionando
+	if(!m_usuariosLogados.empty() && id != 0){
 		auto it = m_usuariosLogados.find(id);
 		m_usuariosLogados.erase(it);
 		teste();
@@ -113,6 +130,9 @@ string Sistema::disconnect(int id) {
 }
 
 string Sistema::create_server(int id, const string nome) {
+
+	
+
 	return "create_server NÃO IMPLEMENTADO";
 }
 
