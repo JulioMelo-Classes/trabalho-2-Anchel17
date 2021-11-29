@@ -37,6 +37,18 @@ class Servidor{
      * @return Id do dono do servidor
      */
     int getServ_Id();
+
+    /**
+     * Método Getter da descrição do servidor
+     * @return A descrição do servidor
+     */
+    std::string getServ_descricao();
+
+    /**
+     * Método Setter da descrição do servidor
+     * @param string desc, descrição digitada para ser colocada como descrição do servidor
+     */
+    void setServ_descricao(std::string desc);
 };
 
 #endif

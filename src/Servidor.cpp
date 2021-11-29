@@ -18,3 +18,11 @@ string Servidor::getServ_Nome(){
 int Servidor::getServ_Id(){
     return serv_id;
 }
+
+string Servidor::getServ_descricao(){
+    return serv_descricao;
+}
+
+void Servidor::setServ_descricao(string desc){
+    this -> serv_descricao = desc;
+}

@@ -153,11 +153,30 @@ string Sistema::create_server(int id, const string nome) {
 
 	m_servidores.push_back(server);
 
+	for(int i = 0; i < m_servidores.size(); i++){
+		cout<<"ID dono: "<<m_servidores[i].getServ_Id()<<endl;
+		cout<<"Nome do server: "<<m_servidores[i].getServ_Nome()<<endl;
+		cout<<"------------------------------------"<<endl;
+	}
+
 	return "Servidor criado";
 }
 
 string Sistema::set_server_desc(int id, const string nome, const string descricao) {
-	return "set_server_desc NÃO IMPLEMENTADO";
+
+	for(int i = 0; i < m_servidores.size(); i++){
+		if(m_servidores[i].getServ_Id() != id && m_servidores[i].getServ_Nome() == nome){
+			return "Você não pode mudar a descrição de um servidor que não foi criado por você!";
+		}
+
+		if(m_servidores[i].getServ_Id() == id && m_servidores[i].getServ_Nome() == nome){
+			m_servidores[i].setServ_descricao(descricao);
+
+			return "Descrição do servidor \'" + m_servidores[i].getServ_Nome() + "\' Alterada";
+		}
+	}
+
+	return "Servidor não encontrado";
 }
 
 string Sistema::set_server_invite_code(int id, const string nome, const string codigo) {
