@@ -14,7 +14,7 @@ class Sistema {
 	private:
 		std::vector<Usuario*> m_usuarios;	//<!Vector contendo referências a usuários cadastrados
 
-		std::vector<Servidor> servidores;	//<!Vector contendo os servidores criados
+		std::vector<Servidor> m_servidores;	//<!Vector contendo os servidores criados
 
 		std::map<int, std::pair<unsigned int, unsigned int>> m_usuariosLogados;		//<!mapeia usuários logados
 

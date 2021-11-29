@@ -15,7 +15,7 @@ string Sistema::quit() {
 
 //só para verificar algumas coisas, depois apago
 void Sistema::teste(){
-
+/*
 	for(int i = 0; i < m_usuarios.size(); i++){
 		cout<<"Id: "<<m_usuarios[i] -> getId()<<endl;
 		cout<<"Nome: "<<m_usuarios[i] -> getNome()<<endl;
@@ -29,7 +29,7 @@ void Sistema::teste(){
 		for(auto it = m_usuariosLogados.begin(); it != m_usuariosLogados.end(); it++){
 			cout<<"ID: "<<it -> first<<" Servidor|canal: "<< it -> second.first<<"|"<< it -> second.second<<endl;
 		}
-	}
+	}*/
 }
 
 string Sistema::create_user (const string email, const string senha, const string nome){
@@ -126,14 +126,34 @@ string Sistema::disconnect(int id) {
 		return "Usuário desconectado";
 	}
 
-	return "Usuário não logado";
+	return "Usuário não logado!";
 }
 
 string Sistema::create_server(int id, const string nome) {
+	//verificar se o id corresponde a um usuário logado
+	if(m_usuariosLogados.empty()){
+		return "Nenhum usuário logado, por favor logue em uma conta.";
+	}
+	else{
+		auto l_user = m_usuariosLogados.find(id);
 
+		if(l_user == m_usuariosLogados.end()){
+			return "Usuário não logado!";
+		}
+
+		for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
+			if(it -> getServ_Nome() == nome){
+				return "Já existe um servidor com esse nome";
+			}
+		}
+
+	}
 	
+	Servidor server(id, nome);
 
-	return "create_server NÃO IMPLEMENTADO";
+	m_servidores.push_back(server);
+
+	return "Servidor criado";
 }
 
 string Sistema::set_server_desc(int id, const string nome, const string descricao) {
