@@ -26,3 +26,11 @@ string Servidor::getServ_descricao(){
 void Servidor::setServ_descricao(string desc){
     this -> serv_descricao = desc;
 }
+
+std::string Servidor::getServ_codigoConvite(){
+    return this -> serv_codigoConvite;
+}
+
+void Servidor::setServ_codigoConvite(string codigo){
+    this -> serv_codigoConvite = codigo;
+}

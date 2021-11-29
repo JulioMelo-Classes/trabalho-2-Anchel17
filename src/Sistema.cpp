@@ -32,6 +32,7 @@ void Sistema::teste(){
 	}*/
 }
 
+//create_user OK
 string Sistema::create_user (const string email, const string senha, const string nome){
 	Usuario *user = new Usuario(email, senha, nome, m_usuarios.size()+1);
 
@@ -65,6 +66,7 @@ string Sistema::create_user (const string email, const string senha, const strin
 	
 }
 
+//delete_user OK
 std::string Sistema::delete_user (const std::string email, const std::string senha){
 	unsigned int l_id;
 
@@ -104,6 +106,7 @@ std::string Sistema::delete_user (const std::string email, const std::string sen
 	}
 }
 
+//login OK
 string Sistema::login(const string email, const string senha){
 
 	for(int i = 0; i < m_usuarios.size(); i++){
@@ -117,6 +120,7 @@ string Sistema::login(const string email, const string senha){
 	return "Usuário ou senha incorreto";
 }
 
+//disconnect OK
 string Sistema::disconnect(int id) {
 	//parece que tá funcionando
 	if(!m_usuariosLogados.empty() && id != 0){
@@ -129,6 +133,7 @@ string Sistema::disconnect(int id) {
 	return "Usuário não logado!";
 }
 
+//create_server OK
 string Sistema::create_server(int id, const string nome) {
 	//verificar se o id corresponde a um usuário logado
 	if(m_usuariosLogados.empty()){
@@ -162,6 +167,7 @@ string Sistema::create_server(int id, const string nome) {
 	return "Servidor criado";
 }
 
+//set_server_desc OK
 string Sistema::set_server_desc(int id, const string nome, const string descricao) {
 
 	for(int i = 0; i < m_servidores.size(); i++){
@@ -179,7 +185,25 @@ string Sistema::set_server_desc(int id, const string nome, const string descrica
 	return "Servidor não encontrado";
 }
 
+//set_server_invite_code OK
 string Sistema::set_server_invite_code(int id, const string nome, const string codigo) {
+	
+	for(int i = 0; i < m_servidores.size(); i++){
+		if(m_servidores[i].getServ_Id() != id && m_servidores[i].getServ_Nome() == nome){
+			return "Você não possui autorização para mudar o código de convite de um servidor que não foi criado por você!";
+		}
+
+		if(m_servidores[i].getServ_Id() == id && m_servidores[i].getServ_Nome() == nome){
+			m_servidores[i].setServ_codigoConvite(codigo);
+
+			if(codigo == ""){
+				return "Código de convite do servidor \'" + m_servidores[i].getServ_Nome() + "\' removido";
+			}
+			
+			return "Código de convite do servidor \'" + m_servidores[i].getServ_Nome() + "\' alterado para: " + codigo;
+		}
+	}
+	
 	return "set_server_invite_code NÃO IMPLEMENTADO";
 }
 

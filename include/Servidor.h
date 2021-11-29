@@ -49,6 +49,18 @@ class Servidor{
      * @param string desc, descrição digitada para ser colocada como descrição do servidor
      */
     void setServ_descricao(std::string desc);
+
+    /**
+     * Método Getter do código de convite do servidor
+     * @return código de convite do servidor
+     */
+    std::string getServ_codigoConvite();
+
+    /**
+     * Método Setter do código de convite do servidor
+     * @param string codigo, string contendo o código de convite
+     */
+    void setServ_codigoConvite(std::string codigo);
 };
 
 #endif
