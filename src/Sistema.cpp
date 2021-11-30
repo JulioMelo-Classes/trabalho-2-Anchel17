@@ -74,8 +74,6 @@ std::string Sistema::delete_user (const std::string email, const std::string sen
 		return "Não existem usuários cadastrados";
 	}
 	else{
-
-		//precisa dar uma polida, só não deleta se o USUÁRIO RECÉM LOGADO TENTAR DELETAR A SI MESMO
 		for(int i = 0; i < m_usuarios.size(); i++){
 			if(m_usuarios[i] -> getEmail() == email){
 				l_id = m_usuarios[i] -> getId();
@@ -83,7 +81,7 @@ std::string Sistema::delete_user (const std::string email, const std::string sen
 
 			auto it = m_usuariosLogados.find(l_id);
 			
-			if(it == m_usuariosLogados.end()){
+			if(it != m_usuariosLogados.end()){
 				return "Por favor, desconecte o usuário para deletá-lo";
 			}
 		}
@@ -95,11 +93,15 @@ std::string Sistema::delete_user (const std::string email, const std::string sen
 				//isso aqui vai re-setar os Id de usuários após o usuário deletado
 				for(int j = 0; j < m_usuarios.size(); j++){
 					m_usuarios[j] -> re_setId(j+1);
+
+					//update no ID de usuários logados
+					m_usuariosLogados[j].first = m_usuarios[j] -> getId();
 				}
+
+				return "Usuário deletado";
 			}
 
 			teste();
-			return "Usuário deletado";
 		}
 
 		return "Usuário não cadastrado";
@@ -121,8 +123,8 @@ string Sistema::login(const string email, const string senha){
 }
 
 //disconnect OK
-string Sistema::disconnect(int id) {
-	//parece que tá funcionando
+string Sistema::disconnect(int id){
+
 	if(!m_usuariosLogados.empty() && id != 0){
 		auto it = m_usuariosLogados.find(id);
 		m_usuariosLogados.erase(it);
@@ -134,7 +136,7 @@ string Sistema::disconnect(int id) {
 }
 
 //create_server OK
-string Sistema::create_server(int id, const string nome) {
+string Sistema::create_server(int id, const string nome){
 	//verificar se o id corresponde a um usuário logado
 	if(m_usuariosLogados.empty()){
 		return "Nenhum usuário logado, por favor logue em uma conta.";
@@ -158,17 +160,11 @@ string Sistema::create_server(int id, const string nome) {
 
 	m_servidores.push_back(server);
 
-	for(int i = 0; i < m_servidores.size(); i++){
-		cout<<"ID dono: "<<m_servidores[i].getServ_Id()<<endl;
-		cout<<"Nome do server: "<<m_servidores[i].getServ_Nome()<<endl;
-		cout<<"------------------------------------"<<endl;
-	}
-
 	return "Servidor criado";
 }
 
 //set_server_desc OK
-string Sistema::set_server_desc(int id, const string nome, const string descricao) {
+string Sistema::set_server_desc(int id, const string nome, const string descricao){
 
 	for(int i = 0; i < m_servidores.size(); i++){
 		if(m_servidores[i].getServ_Id() != id && m_servidores[i].getServ_Nome() == nome){
@@ -182,11 +178,18 @@ string Sistema::set_server_desc(int id, const string nome, const string descrica
 		}
 	}
 
-	return "Servidor não encontrado";
+	return "Servidor não encontrado ou usuário não está logado";
 }
 
 //set_server_invite_code OK
-string Sistema::set_server_invite_code(int id, const string nome, const string codigo) {
+string Sistema::set_server_invite_code(int id, const string nome, const string codigo){
+
+	auto l_user = m_usuariosLogados.find(id);
+	
+	//verifica se o usuário está logado
+	if(l_user == m_usuariosLogados.end()){
+		return "Usuário não logado!";
+	}
 	
 	for(int i = 0; i < m_servidores.size(); i++){
 		if(m_servidores[i].getServ_Id() != id && m_servidores[i].getServ_Nome() == nome){
@@ -204,15 +207,53 @@ string Sistema::set_server_invite_code(int id, const string nome, const string c
 		}
 	}
 	
-	return "set_server_invite_code NÃO IMPLEMENTADO";
+	return "Servidor não encontrado";
 }
 
+//lista servers, OK
 string Sistema::list_servers(int id) {
-	return "list_servers NÃO IMPLEMENTADO";
+	string l_retorno = "";
+
+	auto l_user = m_usuariosLogados.find(id);
+	//só para verificar se o usuário está logado
+	if(l_user == m_usuariosLogados.end()){
+		return "Usuário não está logado ou não existe";
+	}
+
+	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
+		if(it -> getServ_Id() == id){
+			l_retorno += it -> getServ_Nome() + "\n";
+		}
+	}
+
+	if(l_retorno == ""){
+		return "Usuário não está em servidor algum";
+	}
+
+	return l_retorno;
 }
 
+//remove-server 50% pronta
 string Sistema::remove_server(int id, const string nome) {
-	return "remove_server NÃO IMPLEMENTADO";
+
+	auto l_user = m_usuariosLogados.find(id);
+	//só para verificar se o usuário está logado
+	if(l_user == m_usuariosLogados.end()){
+		return "Usuário não está logado ou não existe";
+	}
+
+	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
+		if(it -> getServ_Id() != id && it -> getServ_Nome() == nome){
+			return "Você não tem autorização para remover um servidor que você não criou!";
+		}
+
+		if(it -> getServ_Id() == id && it ->getServ_Nome() == nome){
+			m_servidores.erase(it);
+			return "Servidor removido";
+		}
+	}
+	
+	return "Servidor não encontrado";
 }
 
 string Sistema::enter_server(int id, const string nome, const string codigo) {
