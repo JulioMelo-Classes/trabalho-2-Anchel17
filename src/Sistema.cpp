@@ -21,7 +21,7 @@ void Sistema::teste(){
 		cout<<"Nome: "<<m_usuarios[i] -> getNome()<<endl;
 		cout<<"Email: "<<m_usuarios[i] -> getEmail()<<endl;
 		cout<<"Senha: "<<m_usuarios[i] -> getSenha()<<endl;
-	}*/
+	}
 	if(m_usuariosLogados.empty()){
 		cout<<"Não existem usuários logados"<<endl;
 	}
@@ -29,7 +29,7 @@ void Sistema::teste(){
 		for(auto it = m_usuariosLogados.begin(); it != m_usuariosLogados.end(); it++){
 			cout<<"ID: "<<it -> first<<" Servidor|canal: "<< it -> second.first<<"|"<< it -> second.second<<endl;
 		}
-	}//*/
+	}*/
 }
 
 //create_user OK
@@ -233,7 +233,7 @@ string Sistema::list_servers(int id){
 	return l_retorno;
 }
 
-//remove-server 50% pronta
+//remove-server OK? Talvez
 string Sistema::remove_server(int id, const string nome){
 
 	auto l_user = m_usuariosLogados.find(id);
@@ -248,7 +248,18 @@ string Sistema::remove_server(int id, const string nome){
 		}
 
 		if(it -> getServ_Id() == id && it ->getServ_Nome() == nome){
+			//esse for é para o usuário que estivesse visualizando o servidor, não estar mais vendo ele.
+			for(auto i = m_usuariosLogados.begin(); i != m_usuariosLogados.end(); i++){
+				if(i -> second.first == it -> getServ_Id()){
+					i -> second.first = 0;
+					i -> second.second = 0;
+				}
+			}
+			
 			m_servidores.erase(it);
+
+			teste();
+
 			return "Servidor removido";
 		}
 	}
