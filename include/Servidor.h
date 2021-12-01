@@ -63,6 +63,12 @@ class Servidor{
     void setServ_codigoConvite(std::string codigo);
 
     /**
+     * Método Get para pegar os usuários participantes de um servidor
+     * @return vector contendo os dados dos usuários participantes
+     */
+    std::vector<Usuario*> getServ_participantes();
+
+    /**
      * Método Seter de participantes
      * @param Usuario, referência ao usuário para ser guardada no vector
      */

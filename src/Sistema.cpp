@@ -21,7 +21,7 @@ void Sistema::teste(){
 		cout<<"Nome: "<<m_usuarios[i] -> getNome()<<endl;
 		cout<<"Email: "<<m_usuarios[i] -> getEmail()<<endl;
 		cout<<"Senha: "<<m_usuarios[i] -> getSenha()<<endl;
-	}
+	}*/
 	if(m_usuariosLogados.empty()){
 		cout<<"Não existem usuários logados"<<endl;
 	}
@@ -29,7 +29,7 @@ void Sistema::teste(){
 		for(auto it = m_usuariosLogados.begin(); it != m_usuariosLogados.end(); it++){
 			cout<<"ID: "<<it -> first<<" Servidor|canal: "<< it -> second.first<<"|"<< it -> second.second<<endl;
 		}
-	}*/
+	}//*/
 }
 
 //create_user OK
@@ -113,6 +113,12 @@ string Sistema::login(const string email, const string senha){
 
 	for(int i = 0; i < m_usuarios.size(); i++){
 		if(email == m_usuarios[i] -> getEmail() && senha == m_usuarios[i] -> getSenha()){
+			//verifica se usuário já está logado
+			auto l_user = m_usuariosLogados.find(m_usuarios[i] -> getId());
+			if(l_user != m_usuariosLogados.end()){
+				return "Usuário já logado";
+			}
+
 			m_usuariosLogados.insert({m_usuarios[i] -> getId(), {0, 0}});
 			teste();
 			return "Logado como " + m_usuarios[i] -> getEmail();
@@ -165,6 +171,12 @@ string Sistema::create_server(int id, const string nome){
 
 //set_server_desc OK
 string Sistema::set_server_desc(int id, const string nome, const string descricao){
+
+	auto it = m_usuariosLogados.find(id);
+
+	if(it == m_usuariosLogados.end()){
+		return "Usuário não está logado";
+	}
 
 	for(int i = 0; i < m_servidores.size(); i++){
 		if(m_servidores[i].getServ_Id() != id && m_servidores[i].getServ_Nome() == nome){
@@ -233,7 +245,7 @@ string Sistema::list_servers(int id){
 	return l_retorno;
 }
 
-//remove-server OK? Talvez
+//remove-server pronta? Talvez
 string Sistema::remove_server(int id, const string nome){
 
 	auto l_user = m_usuariosLogados.find(id);
@@ -267,7 +279,7 @@ string Sistema::remove_server(int id, const string nome){
 	return "Servidor não encontrado";
 }
 
-//enter-server pronta? talvez
+//enter_server pronta? talvez
 string Sistema::enter_server(int id, const string nome, const string codigo){
 	Servidor entra(-1, "");
 	
@@ -293,7 +305,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 
 						logado -> second.first = id;
 						teste();
-						return "Entrou no servidor com sucesso";
+						return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
 					}
 				}
 			}
@@ -314,7 +326,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 
 								logado -> second.first = it -> getServ_Id();
 								teste();
-								return "Entrou no servidor com sucesso";
+								return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
 							}
 						}
 					}
@@ -342,7 +354,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 
 						logado -> second.first = it -> getServ_Id();
 						teste();
-						return "Entrou no servidor com sucesso";
+						return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
 					}
 				}
 			}
@@ -352,11 +364,47 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 	return "Servidor não encontrado";
 }
 
-string Sistema::leave_server(int id, const string nome) {
-	return "leave_server NÃO IMPLEMENTADO";
+//leave_server OK
+string Sistema::leave_server(int id, const string nome){
+
+	auto logado = m_usuariosLogados.find(id);
+
+	if(logado == m_usuariosLogados.end()){
+		return "Usuário não está logado";
+	}
+
+	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
+		if(logado -> first == id && logado -> second.first == 0){
+			return "Você não está em qualquer servidor";
+		}
+
+		if(it -> getServ_Nome() == nome){
+				if(logado -> first == id && logado -> second.first == it -> getServ_Id()){
+				logado -> second.first = 0;
+				logado -> second.second = 0;
+
+				teste();
+				return "Saiu do servidor \'" + it ->getServ_Nome() + "\'";
+			}
+			else{
+				return "Usuário não está no servidor \'" + it -> getServ_Nome() +"\'";
+			}
+		}
+	}
+
+	return "Servidor não encontrado";
 }
 
 string Sistema::list_participants(int id) {
+	/*
+	Servidor user(-1, "");
+
+	auto u = user.getServ_participantes();
+	for(int i = 0; i < u.size(); i++){
+		if(u[i] -> getId() == id){
+			
+		}
+	}*/
 	return "list_participants NÃO IMPLEMENTADO";
 }
 

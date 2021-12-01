@@ -26,12 +26,16 @@ void Servidor::setServ_descricao(string desc){
     this -> serv_descricao = desc;
 }
 
-std::string Servidor::getServ_codigoConvite(){
+string Servidor::getServ_codigoConvite(){
     return this -> serv_codigoConvite;
 }
 
 void Servidor::setServ_codigoConvite(string codigo){
     this -> serv_codigoConvite = codigo;
+}
+
+vector<Usuario*> Servidor::getServ_participantes(){
+    return this -> serv_participantes;
 }
 
 void Servidor::setServ_participantes(Usuario *user){
