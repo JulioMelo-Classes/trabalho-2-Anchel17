@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "../include/Servidor.h"
+#include "../include/Usuario.h"
 
 using namespace std;
 
@@ -31,4 +32,8 @@ std::string Servidor::getServ_codigoConvite(){
 
 void Servidor::setServ_codigoConvite(string codigo){
     this -> serv_codigoConvite = codigo;
+}
+
+void Servidor::setServ_participantes(Usuario *user){
+    this -> serv_participantes.push_back(user);
 }

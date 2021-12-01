@@ -61,6 +61,12 @@ class Servidor{
      * @param string codigo, string contendo o código de convite
      */
     void setServ_codigoConvite(std::string codigo);
+
+    /**
+     * Método Seter de participantes
+     * @param Usuario, referência ao usuário para ser guardada no vector
+     */
+    void setServ_participantes(Usuario *user);
 };
 
 #endif

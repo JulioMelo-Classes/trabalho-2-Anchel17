@@ -21,7 +21,7 @@ void Sistema::teste(){
 		cout<<"Nome: "<<m_usuarios[i] -> getNome()<<endl;
 		cout<<"Email: "<<m_usuarios[i] -> getEmail()<<endl;
 		cout<<"Senha: "<<m_usuarios[i] -> getSenha()<<endl;
-	}
+	}*/
 	if(m_usuariosLogados.empty()){
 		cout<<"Não existem usuários logados"<<endl;
 	}
@@ -29,7 +29,7 @@ void Sistema::teste(){
 		for(auto it = m_usuariosLogados.begin(); it != m_usuariosLogados.end(); it++){
 			cout<<"ID: "<<it -> first<<" Servidor|canal: "<< it -> second.first<<"|"<< it -> second.second<<endl;
 		}
-	}*/
+	}//*/
 }
 
 //create_user OK
@@ -211,7 +211,7 @@ string Sistema::set_server_invite_code(int id, const string nome, const string c
 }
 
 //lista servers, OK
-string Sistema::list_servers(int id) {
+string Sistema::list_servers(int id){
 	string l_retorno = "";
 
 	auto l_user = m_usuariosLogados.find(id);
@@ -234,7 +234,7 @@ string Sistema::list_servers(int id) {
 }
 
 //remove-server 50% pronta
-string Sistema::remove_server(int id, const string nome) {
+string Sistema::remove_server(int id, const string nome){
 
 	auto l_user = m_usuariosLogados.find(id);
 	//só para verificar se o usuário está logado
@@ -256,8 +256,89 @@ string Sistema::remove_server(int id, const string nome) {
 	return "Servidor não encontrado";
 }
 
-string Sistema::enter_server(int id, const string nome, const string codigo) {
-	return "enter_server NÃO IMPLEMENTADO";
+//enter-server pronta? talvez
+string Sistema::enter_server(int id, const string nome, const string codigo){
+	Servidor entra(-1, "");
+	
+	auto logado = m_usuariosLogados.find(id);
+
+	if(logado == m_usuariosLogados.end()){
+		return "Usuário não está logado";
+	}
+
+	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
+		if(it -> getServ_Nome() == nome){
+			//aqui é para o caso de ser o dono
+			if(it -> getServ_Id() == id){
+				if(id == logado -> second.first){
+					return "Usuário já está no servidor";
+				}
+				for(int i = 0; i < m_usuarios.size(); i++){
+					//não é a melhor forma, mas ta funcionando
+					if(m_usuarios[i] -> getId() == id){
+						Usuario *user = new Usuario(m_usuarios[i] -> getEmail(), m_usuarios[i] -> getSenha(), m_usuarios[i] -> getNome(), m_usuarios[i] -> getId());
+
+						entra.setServ_participantes(user);
+
+						logado -> second.first = id;
+						teste();
+						return "Entrou no servidor com sucesso";
+					}
+				}
+			}
+			
+			if(it -> getServ_codigoConvite() != ""){
+				if(codigo != ""){
+					if(codigo == it -> getServ_codigoConvite()){
+						if(logado -> second.first == it -> getServ_Id()){
+							return "Usuário já está no servidor";
+						}
+
+						for(int i = 0; i < m_usuarios.size(); i++){
+							//não é a melhor forma, mas ta funcionando
+							if(m_usuarios[i] -> getId() == id){
+								Usuario *user = new Usuario(m_usuarios[i] -> getEmail(), m_usuarios[i] -> getSenha(), m_usuarios[i] -> getNome(), m_usuarios[i] -> getId());
+
+								entra.setServ_participantes(user);
+
+								logado -> second.first = it -> getServ_Id();
+								teste();
+								return "Entrou no servidor com sucesso";
+							}
+						}
+					}
+					else{
+						return "Código de convite inválido";
+					}
+				}
+				else{
+					return "É necessário um código de convite para entrar no servidor";
+				}
+			}
+			//se o servidor não precisa de código de convite
+			else{
+				if(logado -> second.first == it -> getServ_Id()){
+					teste();
+					return "Usuário já está no servidor";
+				}
+
+				for(int i = 0; i < m_usuarios.size(); i++){
+					//não é a melhor forma, mas ta funcionando
+					if(m_usuarios[i] -> getId() == id){
+						Usuario *user = new Usuario(m_usuarios[i] -> getEmail(), m_usuarios[i] -> getSenha(), m_usuarios[i] -> getNome(), m_usuarios[i] -> getId());
+
+						entra.setServ_participantes(user);
+
+						logado -> second.first = it -> getServ_Id();
+						teste();
+						return "Entrou no servidor com sucesso";
+					}
+				}
+			}
+		}
+	}
+	
+	return "Servidor não encontrado";
 }
 
 string Sistema::leave_server(int id, const string nome) {
