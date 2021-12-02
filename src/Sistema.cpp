@@ -141,7 +141,7 @@ string Sistema::disconnect(int id){
 	return "Usuário não logado!";
 }
 
-//create_server sendo re-trabalhado...
+//create_server OK
 string Sistema::create_server(int id, const string nome){
 
 	if(m_usuariosLogados.empty()){
@@ -208,49 +208,44 @@ string Sistema::set_server_invite_code(int id, const string nome, const string c
 		return "Usuário não logado!";
 	}
 	
-	for(int i = 0; i < m_servidores.size(); i++){
-		if(m_servidores[i].getServ_Id() != id && m_servidores[i].getServ_Nome() == nome){
-			return "Você não possui autorização para mudar o código de convite de um servidor que não foi criado por você!";
-		}
-
-		if(m_servidores[i].getServ_Id() == id && m_servidores[i].getServ_Nome() == nome){
-			m_servidores[i].setServ_codigoConvite(codigo);
-
-			if(codigo == ""){
-				return "Código de convite do servidor \'" + m_servidores[i].getServ_Nome() + "\' removido";
+	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
+		if(it -> getServ_Nome() == nome){
+			if(it -> getServ_dono() -> getId() == id){
+				it -> setServ_codigoConvite(codigo);
+				if(codigo != ""){
+					return "Código de convite do servidor \'"+ it -> getServ_Nome() +"\'modificado com sucesso";
+				}
+				else{
+					return "Código de convite do servidor \'"+ it -> getServ_Nome() +"\' removido";
+				}
 			}
-			
-			return "Código de convite do servidor \'" + m_servidores[i].getServ_Nome() + "\' alterado para: " + codigo;
+			else{
+				return "Você não tem autorização para modificar o código de convite deste servidor!";
+			}
 		}
 	}
 	
 	return "Servidor não encontrado";
 }
 
-//lista servers, OK
+//lista servers OK
 string Sistema::list_servers(int id){
 	string l_retorno = "";
 
 	auto l_user = m_usuariosLogados.find(id);
 	//só para verificar se o usuário está logado
 	if(l_user == m_usuariosLogados.end()){
-		return "Usuário não está logado ou não existe";
+		return "Usuário não está logado";
 	}
 
 	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
-		if(it -> getServ_Id() == id){
-			l_retorno += it -> getServ_Nome() + "\n";
-		}
-	}
-
-	if(l_retorno == ""){
-		return "Usuário não está em servidor algum";
+		l_retorno += it -> getServ_Nome() + "\n";
 	}
 
 	return l_retorno;
 }
 
-//remove-server pronta? Talvez
+//remove-server OK
 string Sistema::remove_server(int id, const string nome){
 
 	auto l_user = m_usuariosLogados.find(id);
@@ -260,31 +255,28 @@ string Sistema::remove_server(int id, const string nome){
 	}
 
 	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
-		if(it -> getServ_Id() != id && it -> getServ_Nome() == nome){
-			return "Você não tem autorização para remover um servidor que você não criou!";
-		}
-
-		if(it -> getServ_Id() == id && it ->getServ_Nome() == nome){
-			//esse for é para o usuário que estivesse visualizando o servidor, não estar mais vendo ele.
-			for(auto i = m_usuariosLogados.begin(); i != m_usuariosLogados.end(); i++){
-				if(i -> second.first == it -> getServ_Id()){
-					i -> second.first = 0;
-					i -> second.second = 0;
+		if(it -> getServ_Nome() == nome){
+			if(it -> getServ_dono() -> getId() == id){
+				auto itLog = m_usuariosLogados.find(id);
+				if(itLog != m_usuariosLogados.end()){
+					itLog -> second.first = 0;
+					itLog -> second.second = 0;
 				}
+
+				m_servidores.erase(it);
+				teste();
+				return "Servidor removido com sucesso";
 			}
-			
-			m_servidores.erase(it);
-
-			teste();
-
-			return "Servidor removido";
+			else{
+				return "Você não tem autorização para remover o servidor!";
+			}
 		}
 	}
 	
 	return "Servidor não encontrado";
 }
 
-//enter_server pronta? talvez
+//enter_server OK
 string Sistema::enter_server(int id, const string nome, const string codigo){	
 	auto logado = m_usuariosLogados.find(id);
 
@@ -294,9 +286,8 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 
 	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
 		if(it -> getServ_Nome() == nome){
-			//aqui é para o caso de ser o dono
-			if(it -> getServ_Id() == id){
-				if(id == logado -> second.first){
+			if(it -> getServ_dono() -> getId() == id){
+				if(logado -> second.first == it -> getServ_Id()){
 					return "Usuário já está no servidor";
 				}
 				for(int i = 0; i < m_usuarios.size(); i++){
@@ -306,7 +297,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 
 						it -> setServ_participantes(user);
 
-						logado -> second.first = id;
+						logado -> second.first = it -> getServ_Id();
 						teste();
 						return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
 					}
@@ -322,7 +313,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 
 						for(int i = 0; i < m_usuarios.size(); i++){
 							//não é a melhor forma, mas ta funcionando
-							if(m_usuarios[i] -> getId() == id){
+							if(m_usuarios[i] -> getId() == logado -> first){
 								Usuario *user = new Usuario(m_usuarios[i] -> getEmail(), m_usuarios[i] -> getSenha(), m_usuarios[i] -> getNome(), m_usuarios[i] -> getId());
 
 								it -> setServ_participantes(user);
@@ -350,7 +341,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 
 				for(int i = 0; i < m_usuarios.size(); i++){
 					//não é a melhor forma, mas ta funcionando
-					if(m_usuarios[i] -> getId() == id){
+					if(m_usuarios[i] -> getId() == logado -> first){
 						Usuario *user = new Usuario(m_usuarios[i] -> getEmail(), m_usuarios[i] -> getSenha(), m_usuarios[i] -> getNome(), m_usuarios[i] -> getId());
 
 						it -> setServ_participantes(user);
@@ -367,7 +358,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 	return "Servidor não encontrado";
 }
 
-//leave_server OK
+//leave_server sendo re-trabalhada
 string Sistema::leave_server(int id, const string nome){
 
 	auto logado = m_usuariosLogados.find(id);
@@ -398,7 +389,7 @@ string Sistema::leave_server(int id, const string nome){
 	return "Servidor não encontrado";
 }
 
-//corrigir o bug de caso o usuário tenha mais de 1 servidor
+//sendo trabalhado...
 string Sistema::list_participants(int id){
 
 	auto logado = m_usuariosLogados.find(id);
