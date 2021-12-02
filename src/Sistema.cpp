@@ -141,9 +141,9 @@ string Sistema::disconnect(int id){
 	return "Usuário não logado!";
 }
 
-//create_server OK
+//create_server sendo re-trabalhado...
 string Sistema::create_server(int id, const string nome){
-	//verificar se o id corresponde a um usuário logado
+
 	if(m_usuariosLogados.empty()){
 		return "Nenhum usuário logado, por favor logue em uma conta.";
 	}
@@ -159,17 +159,22 @@ string Sistema::create_server(int id, const string nome){
 				return "Já existe um servidor com esse nome";
 			}
 		}
-
 	}
 	
-	Servidor server(id, nome);
-
-	m_servidores.push_back(server);
+	
+	//para achar o id do usuário que criou o servidor
+	for(int i = 0; i < m_usuarios.size(); i++){
+		if(m_usuarios[i] -> getId() == id){
+			Servidor server(m_usuarios[i], m_servidores.size()+1, nome);
+			m_servidores.push_back(server);
+			break;
+		}
+	}
 
 	return "Servidor criado";
 }
 
-//set_server_desc OK
+//set_server_desc sendo re-trabalhado...
 string Sistema::set_server_desc(int id, const string nome, const string descricao){
 
 	auto it = m_usuariosLogados.find(id);
@@ -178,19 +183,19 @@ string Sistema::set_server_desc(int id, const string nome, const string descrica
 		return "Usuário não está logado";
 	}
 
-	for(int i = 0; i < m_servidores.size(); i++){
-		if(m_servidores[i].getServ_Id() != id && m_servidores[i].getServ_Nome() == nome){
-			return "Você não pode mudar a descrição de um servidor que não foi criado por você!";
-		}
-
-		if(m_servidores[i].getServ_Id() == id && m_servidores[i].getServ_Nome() == nome){
-			m_servidores[i].setServ_descricao(descricao);
-
-			return "Descrição do servidor \'" + m_servidores[i].getServ_Nome() + "\' Alterada";
+	for(auto itServer = m_servidores.begin(); itServer != m_servidores.end(); itServer++){
+		if(itServer -> getServ_Nome() == nome){
+			if(itServer -> getServ_dono() -> getId() == id){
+				itServer -> setServ_descricao(descricao);
+				return "Descrição do servidor \'" + nome + "\' alterada";
+			}
+			else{
+				return "Você não possui autorização para alterar a descrição desta servidor!";
+			}
 		}
 	}
 
-	return "Servidor não encontrado ou usuário não está logado";
+	return "Servidor não encontrado";
 }
 
 //set_server_invite_code OK
@@ -251,7 +256,7 @@ string Sistema::remove_server(int id, const string nome){
 	auto l_user = m_usuariosLogados.find(id);
 	//só para verificar se o usuário está logado
 	if(l_user == m_usuariosLogados.end()){
-		return "Usuário não está logado ou não existe";
+		return "Usuário não está logado";
 	}
 
 	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){

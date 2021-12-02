@@ -6,9 +6,14 @@
 
 using namespace std;
 
-Servidor::Servidor(int id, std::string nome){
+Servidor::Servidor(Usuario* user, int id, std::string nome){
+    this -> serv_dono = user;
     this -> serv_id = id;
     this -> serv_nome = nome;
+}
+
+Usuario* Servidor::getServ_dono(){
+    return this -> serv_dono;
 }
 
 string Servidor::getServ_Nome(){

@@ -26,7 +26,19 @@ class Servidor{
 
     public:
 
-    Servidor(int id, std::string nome);
+    /**
+     * Construtor da classe Servidor
+     * @param Usuario* referência ao usuário que criou o servidor
+     * @param int id do servidor
+     * @param string nome do servidor
+     */
+    Servidor(Usuario* user, int id, std::string nome);
+
+    /**
+     * Método Get para o dono do servidor
+     * @return Referência ao dono do servidor
+     */
+    Usuario* getServ_dono();
 
     /**
      * método Getter do nome do servidor
