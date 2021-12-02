@@ -2,6 +2,8 @@
 #define SERVIDOR_H
 
 #include <vector>
+#include <map>
+
 #include "../include/Usuario.h"
 
 class Servidor{
@@ -64,9 +66,11 @@ class Servidor{
 
     /**
      * Método Get para pegar os usuários participantes de um servidor
-     * @return vector contendo os dados dos usuários participantes
+     * @param map A lista de usuários logados no servidor, com a informação de qual servidor o usuário está olhando
+     * @param int id do usuário visualizando o servidor
+     * @return string contendo os usuários participantes do servidor
      */
-    std::vector<Usuario*> getServ_participantes();
+    std::string getServ_participantes(std::map<int, std::pair<unsigned int, unsigned int>> usuariosLogados, int id);
 
     /**
      * Método Seter de participantes

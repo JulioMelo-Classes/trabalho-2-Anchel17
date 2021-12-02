@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 
 #include "../include/Servidor.h"
 #include "../include/Usuario.h"
@@ -34,8 +35,21 @@ void Servidor::setServ_codigoConvite(string codigo){
     this -> serv_codigoConvite = codigo;
 }
 
-vector<Usuario*> Servidor::getServ_participantes(){
-    return this -> serv_participantes;
+//corrigir o bug pro caso do usuário possuir mais de 1 servidor
+string Servidor::getServ_participantes(map<int, std::pair<unsigned int, unsigned int>> usuariosLogados,int id){
+    string retorno = "";
+
+    for(auto itLog = usuariosLogados.begin(); itLog != usuariosLogados.end(); itLog++){
+        if(itLog -> second.first == id){
+            for(int i = 0; i < serv_participantes.size(); i++){
+                if(serv_participantes[i] -> getId() == itLog -> first){
+                    retorno += serv_participantes[i] -> getNome() + "\n";
+                }
+            }
+        }
+    }
+
+    return retorno;
 }
 
 void Servidor::setServ_participantes(Usuario *user){

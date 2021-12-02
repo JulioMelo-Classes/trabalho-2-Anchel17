@@ -280,9 +280,7 @@ string Sistema::remove_server(int id, const string nome){
 }
 
 //enter_server pronta? talvez
-string Sistema::enter_server(int id, const string nome, const string codigo){
-	Servidor entra(-1, "");
-	
+string Sistema::enter_server(int id, const string nome, const string codigo){	
 	auto logado = m_usuariosLogados.find(id);
 
 	if(logado == m_usuariosLogados.end()){
@@ -301,7 +299,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 					if(m_usuarios[i] -> getId() == id){
 						Usuario *user = new Usuario(m_usuarios[i] -> getEmail(), m_usuarios[i] -> getSenha(), m_usuarios[i] -> getNome(), m_usuarios[i] -> getId());
 
-						entra.setServ_participantes(user);
+						it -> setServ_participantes(user);
 
 						logado -> second.first = id;
 						teste();
@@ -322,7 +320,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 							if(m_usuarios[i] -> getId() == id){
 								Usuario *user = new Usuario(m_usuarios[i] -> getEmail(), m_usuarios[i] -> getSenha(), m_usuarios[i] -> getNome(), m_usuarios[i] -> getId());
 
-								entra.setServ_participantes(user);
+								it -> setServ_participantes(user);
 
 								logado -> second.first = it -> getServ_Id();
 								teste();
@@ -350,7 +348,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 					if(m_usuarios[i] -> getId() == id){
 						Usuario *user = new Usuario(m_usuarios[i] -> getEmail(), m_usuarios[i] -> getSenha(), m_usuarios[i] -> getNome(), m_usuarios[i] -> getId());
 
-						entra.setServ_participantes(user);
+						it -> setServ_participantes(user);
 
 						logado -> second.first = it -> getServ_Id();
 						teste();
@@ -395,17 +393,23 @@ string Sistema::leave_server(int id, const string nome){
 	return "Servidor não encontrado";
 }
 
-string Sistema::list_participants(int id) {
-	/*
-	Servidor user(-1, "");
+//corrigir o bug de caso o usuário tenha mais de 1 servidor
+string Sistema::list_participants(int id){
 
-	auto u = user.getServ_participantes();
-	for(int i = 0; i < u.size(); i++){
-		if(u[i] -> getId() == id){
-			
+	auto logado = m_usuariosLogados.find(id);
+
+	if(logado == m_usuariosLogados.end()){
+		return "Usuário não está logado";
+	}
+
+	//essa bixiga procura por usuarios no mesmo servidor que o usuário passado por ip está
+	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
+		if(it -> getServ_Id() == logado -> second.first){
+			return it -> getServ_participantes(m_usuariosLogados, it -> getServ_Id());
 		}
-	}*/
-	return "list_participants NÃO IMPLEMENTADO";
+	}
+
+	return "O usuário não está visualizando nenhum servidor";
 }
 
 string Sistema::list_channels(int id) {
