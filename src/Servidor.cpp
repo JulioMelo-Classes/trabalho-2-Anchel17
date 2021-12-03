@@ -40,16 +40,12 @@ void Servidor::setServ_codigoConvite(string codigo){
     this -> serv_codigoConvite = codigo;
 }
 
-//corrigir o bug pro caso do usuário possuir mais de 1 servidor
-string Servidor::getServ_participantes(map<int, std::pair<unsigned int, unsigned int>> usuariosLogados,int id){
+string Servidor::getServ_participantes(vector<Usuario*> user){
     string retorno = "";
-
-    for(auto itLog = usuariosLogados.begin(); itLog != usuariosLogados.end(); itLog++){
-        if(itLog -> second.first == id){
-            for(int i = 0; i < serv_participantes.size(); i++){
-                if(serv_participantes[i] -> getId() == itLog -> first){
-                    retorno += serv_participantes[i] -> getNome() + "\n";
-                }
+    for(auto itPart = serv_participantes.begin(); itPart != serv_participantes.end(); itPart++){
+        for(auto itUser = user.begin(); itUser != user.end(); itUser++){
+            if(*itPart == *itUser){
+                retorno;
             }
         }
     }
