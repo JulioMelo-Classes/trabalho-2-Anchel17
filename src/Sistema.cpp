@@ -1,3 +1,5 @@
+/*Mudar de vector<Usuario*> serv_participantes para
+vector<int> serv_participantes, guardando só o ID*/
 #include <iostream>
 #include <sstream>
 #include <algorithm>
@@ -296,7 +298,6 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 						Usuario *user = new Usuario(m_usuarios[i] -> getEmail(), m_usuarios[i] -> getSenha(), m_usuarios[i] -> getNome(), m_usuarios[i] -> getId());
 
 						it -> setServ_participantes(user);
-
 						logado -> second.first = it -> getServ_Id();
 						teste();
 						return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
@@ -390,6 +391,7 @@ string Sistema::leave_server(int id, const string nome){
 
 //sendo trabalhado...
 string Sistema::list_participants(int id){
+	string retorno = "";
 
 	auto logado = m_usuariosLogados.find(id);
 
@@ -397,11 +399,19 @@ string Sistema::list_participants(int id){
 		return "Usuário não está logado";
 	}
 
-	//essa bixiga procura por usuarios no mesmo servidor que o usuário passado por ip está
+	//MUDAR A ESPECIFICAÇÃO DO TRABALHO, NO LUGAR DE SER vector<Usuario*> serv_participantes
+	//VAI VIRAR vector<int> serv_participantes; SIMPLESMENTE GUARDANDO O ID DOS PARTICIPANTES
+	//essa bixiga procura por usuarios no mesmo servidor que o usuário passado por id está
 	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
-		if(it -> getServ_Id() == logado -> second.first){
-			return it -> getServ_participantes(m_usuariosLogados, it -> getServ_Id());
+		for(int i = 0; i < m_usuarios.size(); i++){
+			if(it -> getServ_Id() == logado -> second.first){
+				retorno += m_usuarios[i] -> getNome() + "\n";
+			}
 		}
+	}
+
+	if(retorno != ""){
+		return retorno;
 	}
 
 	return "O usuário não está visualizando nenhum servidor";
