@@ -358,7 +358,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 	return "Servidor não encontrado";
 }
 
-//leave_server sendo re-trabalhada
+//leave_server OK
 string Sistema::leave_server(int id, const string nome){
 
 	auto logado = m_usuariosLogados.find(id);
@@ -368,20 +368,19 @@ string Sistema::leave_server(int id, const string nome){
 	}
 
 	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
-		if(logado -> first == id && logado -> second.first == 0){
-			return "Você não está em qualquer servidor";
+		if(logado -> second.first == 0){
+			return "Você não está em servidor algum";
 		}
 
 		if(it -> getServ_Nome() == nome){
-				if(logado -> first == id && logado -> second.first == it -> getServ_Id()){
+			if(it -> getServ_Id() == logado -> second.first){
 				logado -> second.first = 0;
 				logado -> second.second = 0;
-
 				teste();
-				return "Saiu do servidor \'" + it ->getServ_Nome() + "\'";
+				return "Saiu do servidor \'" + it -> getServ_Nome() + "\'";
 			}
 			else{
-				return "Usuário não está no servidor \'" + it -> getServ_Nome() +"\'";
+				return "Usuário não está no servidor \'" + it -> getServ_Nome() + "\'";
 			}
 		}
 	}
