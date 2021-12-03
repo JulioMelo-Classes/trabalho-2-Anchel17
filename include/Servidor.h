@@ -22,7 +22,7 @@ class Servidor{
 
     //std::vector<CanalTexto> CanaisTexto; //<!vector contendo os canais de texto do servidor
 
-    std::vector<Usuario*> serv_participantes; //<!vetor contendo referència aos usuários participantes dele
+    std::vector<Usuario*> serv_participantes; //<!vetor contendo referència aos usuários participantes do servidor
 
     public:
 
@@ -78,11 +78,10 @@ class Servidor{
 
     /**
      * Método Get para pegar os usuários participantes de um servidor
-     * @param map A lista de usuários logados no servidor, com a informação de qual servidor o usuário está olhando
-     * @param int id do usuário visualizando o servidor
+     * @param vector Vector contendo referências para usuários
      * @return string contendo os usuários participantes do servidor
      */
-    std::string getServ_participantes(std::map<int, std::pair<unsigned int, unsigned int>> usuariosLogados, int id);
+    std::string getServ_participantes(std::vector<Usuario*> user);
 
     /**
      * Método Seter de participantes
