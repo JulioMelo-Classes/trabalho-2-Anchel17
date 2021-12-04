@@ -83,6 +83,12 @@ class Servidor{
     void eraseServ_participante(unsigned int id);
 
     /**
+     * Método para verificar se um usuário já não faz parte do servidor
+     * @param unsigned int id do usuário a ser verificado
+     */
+    bool verServ_participantes(unsigned int id);
+
+    /**
      * Método Get para pegar os usuários participantes de um servidor
      * @param vector vector contendo referências ao usuários cadastrados no sistema
      * @return string contendo o Id de participantes do servidor
