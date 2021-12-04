@@ -22,7 +22,7 @@ class Servidor{
 
     //std::vector<CanalTexto> CanaisTexto; //<!vector contendo os canais de texto do servidor
 
-    std::vector<Usuario*> serv_participantes; //<!vetor contendo referència aos usuários participantes do servidor
+    std::vector<unsigned int> serv_participantes; //<!vetor contendo Id dos usuários participantes do servidor
 
     public:
 
@@ -77,17 +77,23 @@ class Servidor{
     void setServ_codigoConvite(std::string codigo);
 
     /**
-     * Método Get para pegar os usuários participantes de um servidor
-     * @param vector Vector contendo referências para usuários
-     * @return string contendo os usuários participantes do servidor
+     * Método para remover o usuário do vector de participantes de um servidor
+     * @param unsigned int id do usuário que sai do servidor
      */
-    std::string getServ_participantes(std::vector<Usuario*> user);
+    void eraseServ_participante(unsigned int id);
 
     /**
-     * Método Seter de participantes
-     * @param Usuario, referência ao usuário para ser guardada no vector
+     * Método Get para pegar os usuários participantes de um servidor
+     * @param vector vector contendo referências ao usuários cadastrados no sistema
+     * @return string contendo o Id de participantes do servidor
      */
-    void setServ_participantes(Usuario *user);
+    std::string getServ_participantes(std::vector<Usuario*> user);
+    
+    /**
+     * Método Seter de participantes
+     * @param int id dos usuários para ser guardada no vector
+     */
+    void setServ_participantes(unsigned int id);
 };
 
 #endif
