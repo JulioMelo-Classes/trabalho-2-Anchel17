@@ -40,12 +40,23 @@ void Servidor::setServ_codigoConvite(string codigo){
     this -> serv_codigoConvite = codigo;
 }
 
+void Servidor::eraseServ_participante(unsigned int id){
+    for(auto it = serv_participantes.begin(); it != serv_participantes.end(); it++){
+        if(*it == id){
+            serv_participantes.erase(it);
+        }
+    } 
+}
+
 string Servidor::getServ_participantes(vector<Usuario*> user){
     string retorno = "";
-    for(auto itPart = serv_participantes.begin(); itPart != serv_participantes.end(); itPart++){
-        for(auto itUser = user.begin(); itUser != user.end(); itUser++){
-            if(*itPart == *itUser){
-                retorno;
+
+    //para pegar os usuários participantes
+    //o itPart aponta para um ID no vector de IDs
+    for(int i = 0; i < user.size(); i++){
+        for(auto itPart = serv_participantes.begin(); itPart != serv_participantes.end(); itPart++){
+            if(user[i] -> getId() == *itPart){
+                retorno += user[i] -> getNome() + "\n";
             }
         }
     }
@@ -53,6 +64,6 @@ string Servidor::getServ_participantes(vector<Usuario*> user){
     return retorno;
 }
 
-void Servidor::setServ_participantes(Usuario *user){
-    this -> serv_participantes.push_back(user);
+void Servidor::setServ_participantes(unsigned int id){
+    this -> serv_participantes.push_back(id);
 }
