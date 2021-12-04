@@ -66,7 +66,7 @@ string Sistema::create_user (const string email, const string senha, const strin
 	
 }
 
-//delete_user OK
+//delete_user precisa ser modificado
 std::string Sistema::delete_user (const std::string email, const std::string senha){
 	unsigned int l_id;
 
@@ -97,6 +97,10 @@ std::string Sistema::delete_user (const std::string email, const std::string sen
 					//update no ID de usuários logados
 					m_usuariosLogados[j].first = m_usuarios[j] -> getId();
 				}
+				auto it = m_servidores.begin();
+
+				//apaga o id de um usuário que foi excluído do sistema, mas participava de um servidor
+				it -> eraseServ_participante(m_usuarios[i] -> getId());
 
 				return "Usuário deletado";
 			}
@@ -174,7 +178,7 @@ string Sistema::create_server(int id, const string nome){
 	return "Servidor criado";
 }
 
-//set_server_desc sendo re-trabalhado...
+//set_server_desc OK
 string Sistema::set_server_desc(int id, const string nome, const string descricao){
 
 	auto it = m_usuariosLogados.find(id);
@@ -247,7 +251,6 @@ string Sistema::list_servers(int id){
 
 //remove-server OK
 string Sistema::remove_server(int id, const string nome){
-
 	auto l_user = m_usuariosLogados.find(id);
 	//só para verificar se o usuário está logado
 	if(l_user == m_usuariosLogados.end()){
@@ -257,12 +260,14 @@ string Sistema::remove_server(int id, const string nome){
 	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
 		if(it -> getServ_Nome() == nome){
 			if(it -> getServ_dono() -> getId() == id){
-				auto itLog = m_usuariosLogados.find(id);
-				if(itLog != m_usuariosLogados.end()){
-					itLog -> second.first = 0;
-					itLog -> second.second = 0;
+				//verifica se existem usuários visualizando o servidor a ser deletado
+				for(auto itLog = m_usuariosLogados.begin(); itLog != m_usuariosLogados.end(); itLog++){
+					if(itLog -> second.first == it -> getServ_Id()){
+						itLog -> second.first = 0;
+						itLog -> second.second = 0;
+					}
 				}
-
+	
 				m_servidores.erase(it);
 				teste();
 				return "Servidor removido com sucesso";
@@ -293,9 +298,11 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 				for(int i = 0; i < m_usuarios.size(); i++){
 					//não é a melhor forma, mas ta funcionando
 					if(m_usuarios[i] -> getId() == id){
-						//Usuario *user = new Usuario(m_usuarios[i] -> getEmail(), m_usuarios[i] -> getSenha(), m_usuarios[i] -> getNome(), m_usuarios[i] -> getId());
+						//verifica se o usuário já não faz parte do servidor
+						if(!it -> verServ_participantes(m_usuarios[i] -> getId())){
+							it -> setServ_participantes(m_usuarios[i] -> getId());
+						}
 
-						it -> setServ_participantes(m_usuarios[i] -> getId());
 						logado -> second.first = it -> getServ_Id();
 						teste();
 						return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
@@ -313,9 +320,10 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 						for(int i = 0; i < m_usuarios.size(); i++){
 							//não é a melhor forma, mas ta funcionando
 							if(m_usuarios[i] -> getId() == logado -> first){
-								//Usuario *user = new Usuario(m_usuarios[i] -> getEmail(), m_usuarios[i] -> getSenha(), m_usuarios[i] -> getNome(), m_usuarios[i] -> getId());
-
-								it -> setServ_participantes(m_usuarios[i] -> getId());
+								//verifica se o usuário já não faz parte do servidor
+								if(!it -> verServ_participantes(m_usuarios[i] -> getId())){
+									it -> setServ_participantes(m_usuarios[i] -> getId());
+								}
 
 								logado -> second.first = it -> getServ_Id();
 								teste();
@@ -341,9 +349,10 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 				for(int i = 0; i < m_usuarios.size(); i++){
 					//não é a melhor forma, mas ta funcionando
 					if(m_usuarios[i] -> getId() == logado -> first){
-						//Usuario *user = new Usuario(m_usuarios[i] -> getEmail(), m_usuarios[i] -> getSenha(), m_usuarios[i] -> getNome(), m_usuarios[i] -> getId());
-
-						it -> setServ_participantes(m_usuarios[i] -> getId());
+						//verifica se o usuário já não faz parte do servidor
+						if(!it -> verServ_participantes(m_usuarios[i] -> getId())){
+							it -> setServ_participantes(m_usuarios[i] -> getId());
+						}
 
 						logado -> second.first = it -> getServ_Id();
 						teste();
@@ -359,7 +368,6 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 
 //leave_server OK
 string Sistema::leave_server(int id, const string nome){
-
 	auto logado = m_usuariosLogados.find(id);
 
 	if(logado == m_usuariosLogados.end()){
@@ -373,9 +381,6 @@ string Sistema::leave_server(int id, const string nome){
 
 		if(it -> getServ_Nome() == nome){
 			if(it -> getServ_Id() == logado -> second.first){
-				//apaga o id de usuário participante do servidor 
-				it -> eraseServ_participante(logado -> first);
-
 				logado -> second.first = 0;
 				logado -> second.second = 0;
 				teste();
@@ -390,7 +395,7 @@ string Sistema::leave_server(int id, const string nome){
 	return "Servidor não encontrado";
 }
 
-//list_participants OK
+//list_participants Precisa de modificações
 string Sistema::list_participants(int id){
 	string retorno = "";
 
@@ -400,13 +405,12 @@ string Sistema::list_participants(int id){
 		return "Usuário não está logado";
 	}
 
-	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
-		if(it -> getServ_Id() == logado -> second.first){
-			return it -> getServ_participantes(m_usuarios);
-		}
+	if(logado -> second.first == 0){
+		return "O usuário não está visualizando nenhum servidor";
 	}
 
-	return "O usuário não está visualizando nenhum servidor";
+	auto it = m_servidores.begin();
+	return it -> getServ_participantes(m_usuarios);
 }
 
 string Sistema::list_channels(int id) {
