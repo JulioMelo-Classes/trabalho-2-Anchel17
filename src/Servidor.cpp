@@ -44,8 +44,19 @@ void Servidor::eraseServ_participante(unsigned int id){
     for(auto it = serv_participantes.begin(); it != serv_participantes.end(); it++){
         if(*it == id){
             serv_participantes.erase(it);
+            break;
         }
     } 
+}
+
+bool Servidor::verServ_participantes(unsigned int id){
+    for(auto itPart = serv_participantes.begin(); itPart != serv_participantes.end(); itPart++){
+        if(id == *itPart){
+            return true;
+        }
+    }
+
+    return false;
 }
 
 string Servidor::getServ_participantes(vector<Usuario*> user){
