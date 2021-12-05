@@ -5,6 +5,7 @@
 #include <map>
 
 #include "../include/Usuario.h"
+#include "../include/CanalTexto.h"
 
 class Servidor{
 
@@ -20,7 +21,7 @@ class Servidor{
 
     std::string serv_codigoConvite; //<!Código de convite para o servidor
 
-    //std::vector<CanalTexto> CanaisTexto; //<!vector contendo os canais de texto do servidor
+    std::vector<CanalTexto> CanaisTexto; //<!vector contendo os canais de texto do servidor
 
     std::vector<unsigned int> serv_participantes; //<!vetor contendo Id dos usuários participantes do servidor
 
@@ -93,7 +94,7 @@ class Servidor{
      * @param vector vector contendo referências ao usuários cadastrados no sistema
      * @return string contendo o Id de participantes do servidor
      */
-    std::string getServ_participantes(std::vector<Usuario*> user);
+    std::string getServ_participantes(std::vector<Usuario*> &user);
     
     /**
      * Método Seter de participantes
