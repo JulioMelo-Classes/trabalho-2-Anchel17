@@ -413,7 +413,8 @@ string Sistema::list_participants(int id){
 	return it -> getServ_participantes(m_usuarios);
 }
 
-string Sistema::list_channels(int id) {
+//list_channels SENDO IMPLEMENTADA...
+string Sistema::list_channels(int id){
 	return "list_channels NÃO IMPLEMENTADO";
 }
 
