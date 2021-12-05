@@ -59,7 +59,7 @@ bool Servidor::verServ_participantes(unsigned int id){
     return false;
 }
 
-string Servidor::getServ_participantes(vector<Usuario*> user){
+string Servidor::getServ_participantes(vector<Usuario*> &user){
     string retorno = "";
 
     //para pegar os usuários participantes
