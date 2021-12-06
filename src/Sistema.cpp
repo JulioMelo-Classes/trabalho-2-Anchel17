@@ -383,6 +383,8 @@ string Sistema::leave_server(int id, const string nome){
 			if(it -> getServ_Id() == logado -> second.first){
 				logado -> second.first = 0;
 				logado -> second.second = 0;
+				it -> eraseServ_participante(logado -> first);
+
 				teste();
 				return "Saiu do servidor \'" + it -> getServ_Nome() + "\'";
 			}
@@ -395,7 +397,7 @@ string Sistema::leave_server(int id, const string nome){
 	return "Servidor não encontrado";
 }
 
-//list_participants Precisa de modificações
+//list_participants OK
 string Sistema::list_participants(int id){
 	string retorno = "";
 
@@ -405,21 +407,60 @@ string Sistema::list_participants(int id){
 		return "Usuário não está logado";
 	}
 
-	if(logado -> second.first == 0){
-		return "O usuário não está visualizando nenhum servidor";
+	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
+		if(it -> getServ_Id() == logado -> second.first){
+			return it -> getServ_participantes(m_usuarios);
+		}
+	}
+	
+	return "O usuário não está visualizando nenhum servidor";
+}
+
+//list_channels
+/*
+	Aqui tá com um bug que só aparece quando um usuário está em mais de um servidor e cria
+	canais em ambos os servidores
+*/
+string Sistema::list_channels(int id){
+
+	auto logado = m_usuariosLogados.find(id);
+
+	if(logado == m_usuariosLogados.end()){
+		return "Usuário não logado";
+	}
+	
+	for(auto itServ = m_servidores.begin(); itServ != m_servidores.end(); itServ++){
+		if(itServ -> getServ_Id() == logado -> second.first){
+			return itServ -> getServ_canaisTexto();
+		}
+	}
+	
+	return "Usuário não está visualizando nenhum servidor";
+}
+
+//create_channel TALVEZ OK
+string Sistema::create_channel(int id, const string nome) {
+
+	auto logado = m_usuariosLogados.find(id);
+
+	if(logado == m_usuariosLogados.end()){
+		return "Usuário não logado";
 	}
 
-	auto it = m_servidores.begin();
-	return it -> getServ_participantes(m_usuarios);
-}
+	for(auto itServ = m_servidores.begin(); itServ != m_servidores.end(); itServ++){
+		for(int i = 0; i < m_usuarios.size(); i++){
+			if(m_usuarios[i] -> getId() == logado -> first){
+				if(itServ -> verServ_participantes(logado -> first)){
+					CanalTexto canal(itServ -> getServ_canaisTextoSize() + 1, nome, m_usuarios[i]);
+					itServ -> setServ_canaisTexto(canal);
 
-//list_channels SENDO IMPLEMENTADA...
-string Sistema::list_channels(int id){
-	return "list_channels NÃO IMPLEMENTADO";
-}
+					return "Canal \'"+ canal.getCh_Nome() +"\'criado";
+				}
+			}
+		}
+	}
 
-string Sistema::create_channel(int id, const string nome) {
-	return "create_channel NÃO IMPLEMENTADO";
+	return "Usuário não está visualizando nenhum servidor";
 }
 
 string Sistema::remove_channel(int id, const string nome) {
