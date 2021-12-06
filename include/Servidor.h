@@ -101,6 +101,24 @@ class Servidor{
      * @param int id dos usuários para ser guardada no vector
      */
     void setServ_participantes(unsigned int id);
+
+    /**
+     * Método para pegar o tamanho do vector de canais de texto
+     * @return int contendo o tamanho do vector de canais de texto
+     */
+    int getServ_canaisTextoSize();
+
+    /**
+     * Método para pegar os Canais de texto do servidor
+     * @return string contendo os canais de texto do servidor
+     */
+    std::string getServ_canaisTexto();
+
+    /**
+     * Método para preencher o vector de canais de texto
+     * @param CanalTexto objeto a ser armazenado no vector de canais de texto
+     */
+    void setServ_canaisTexto(CanalTexto canaisTexto);
 };
 
 #endif
