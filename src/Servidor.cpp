@@ -3,6 +3,7 @@
 
 #include "../include/Servidor.h"
 #include "../include/Usuario.h"
+#include "../include/Sistema.h"
 
 using namespace std;
 
@@ -62,12 +63,10 @@ bool Servidor::verServ_participantes(unsigned int id){
 string Servidor::getServ_participantes(vector<Usuario*> &user){
     string retorno = "";
 
-    //para pegar os usuários participantes
-    //o itPart aponta para um ID no vector de IDs
-    for(int i = 0; i < user.size(); i++){
-        for(auto itPart = serv_participantes.begin(); itPart != serv_participantes.end(); itPart++){
-            if(user[i] -> getId() == *itPart){
-                retorno += user[i] -> getNome() + "\n";
+    for(unsigned int i : serv_participantes){
+        for(Usuario* u : user){
+            if(u -> getId() == i){
+                retorno += u -> getNome() + "\n";
             }
         }
     }
@@ -77,4 +76,25 @@ string Servidor::getServ_participantes(vector<Usuario*> &user){
 
 void Servidor::setServ_participantes(unsigned int id){
     this -> serv_participantes.push_back(id);
+}
+
+int Servidor::getServ_canaisTextoSize(){
+    return this -> CanaisTexto.size();
+}
+
+string Servidor::getServ_canaisTexto(){
+    string retorno = "#Canais de texto\n";
+
+    cout<<CanaisTexto.size()<<endl;
+    
+    for(CanalTexto canal : CanaisTexto){
+        retorno += canal.getCh_Nome() + "\n";
+    }
+
+    return retorno;
+}
+
+void Servidor::setServ_canaisTexto(CanalTexto canaisTexto){
+    this -> CanaisTexto.push_back(canaisTexto);
+    cout<<CanaisTexto.size()<<endl;
 }
