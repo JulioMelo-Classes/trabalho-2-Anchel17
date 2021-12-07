@@ -7,6 +7,7 @@ using namespace std;
 #include "../include/Sistema.h"
 #include "../include/Usuario.h"
 #include "../include/Servidor.h"
+#include "../include/CanalTexto.h"
 
 /* COMANDOS */
 string Sistema::quit() {
@@ -304,6 +305,8 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 						}
 
 						logado -> second.first = it -> getServ_Id();
+						//usuário entra visualizando nenhum canal
+						logado -> second.second = 0;
 						teste();
 						return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
 					}
@@ -326,6 +329,9 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 								}
 
 								logado -> second.first = it -> getServ_Id();
+								//usuário entra visualizando nenhum canal
+								logado -> second.second = 0;
+								
 								teste();
 								return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
 							}
@@ -355,6 +361,9 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 						}
 
 						logado -> second.first = it -> getServ_Id();
+						//usuário entra visualizando nenhum canal
+						logado -> second.second = 0;
+			
 						teste();
 						return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
 					}
@@ -409,7 +418,7 @@ string Sistema::list_participants(int id){
 
 	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
 		if(it -> getServ_Id() == logado -> second.first){
-			return it -> getServ_participantes(m_usuarios);
+			return it -> imprimeServ_participantes(m_usuarios);
 		}
 	}
 	
@@ -431,7 +440,7 @@ string Sistema::list_channels(int id){
 	
 	for(auto itServ = m_servidores.begin(); itServ != m_servidores.end(); itServ++){
 		if(itServ -> getServ_Id() == logado -> second.first){
-			return itServ -> getServ_canaisTexto();
+			return itServ -> imprimeServ_canaisTexto();
 		}
 	}
 	
@@ -439,7 +448,7 @@ string Sistema::list_channels(int id){
 }
 
 //create_channel TALVEZ OK
-string Sistema::create_channel(int id, const string nome) {
+string Sistema::create_channel(int id, const string nome){
 
 	auto logado = m_usuariosLogados.find(id);
 
@@ -463,12 +472,35 @@ string Sistema::create_channel(int id, const string nome) {
 	return "Usuário não está visualizando nenhum servidor";
 }
 
-string Sistema::remove_channel(int id, const string nome) {
+string Sistema::remove_channel(int id, const string nome){
 	return "remove_channel NÃO IMPLEMENTADO";
 }
 
-string Sistema::enter_channel(int id, const string nome) {
-	return "enter_channel NÃO IMPLEMENTADO";
+//enter_channel OK
+string Sistema::enter_channel(int id, const string nome){
+
+	auto logado = m_usuariosLogados.find(id);
+
+	if(logado == m_usuariosLogados.end()){
+		return "Usuário não logado";
+	}
+
+	for(auto itServ = m_servidores.begin(); itServ != m_servidores.end(); itServ++){
+		if(itServ -> verServ_canalTexto(nome)){
+			if(logado -> second.first == itServ -> getServ_Id()){
+				if(logado -> second.second != itServ -> getServ_canaisTextoId(nome)){
+					logado -> second.second = itServ -> getServ_canaisTextoId(nome);
+					teste();
+					return "Entrou no canal \'"+ nome + "\'";
+				}
+			}
+			else{
+				return "Usuário já está no canal \'"+ nome +"\'"; 
+			}
+		}
+	}
+
+	return "canal \'"+ nome +"\' não existe";
 }
 
 string Sistema::leave_channel(int id) {
