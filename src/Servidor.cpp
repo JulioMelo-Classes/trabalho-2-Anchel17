@@ -60,7 +60,7 @@ bool Servidor::verServ_participantes(unsigned int id){
     return false;
 }
 
-string Servidor::getServ_participantes(vector<Usuario*> &user){
+string Servidor::imprimeServ_participantes(vector<Usuario*> &user){
     string retorno = "";
 
     for(unsigned int i : serv_participantes){
@@ -78,14 +78,30 @@ void Servidor::setServ_participantes(unsigned int id){
     this -> serv_participantes.push_back(id);
 }
 
+int Servidor::getServ_canaisTextoId(string nome){
+    for(CanalTexto canal : CanaisTexto){
+        if(canal.getCh_Nome() == nome){
+            return canal.getCh_Id();
+        }
+    }
+    return 0;
+}
+
 int Servidor::getServ_canaisTextoSize(){
     return this -> CanaisTexto.size();
 }
 
-string Servidor::getServ_canaisTexto(){
-    string retorno = "#Canais de texto\n";
+bool Servidor::verServ_canalTexto(string nome){
+    for(CanalTexto canal : CanaisTexto){
+        if(canal.getCh_Nome() == nome){
+            return true;
+        }
+    }
+    return false;
+}
 
-    cout<<CanaisTexto.size()<<endl;
+string Servidor::imprimeServ_canaisTexto(){
+    string retorno = "#Canais de texto\n";
     
     for(CanalTexto canal : CanaisTexto){
         retorno += canal.getCh_Nome() + "\n";
@@ -96,5 +112,4 @@ string Servidor::getServ_canaisTexto(){
 
 void Servidor::setServ_canaisTexto(CanalTexto canaisTexto){
     this -> CanaisTexto.push_back(canaisTexto);
-    cout<<CanaisTexto.size()<<endl;
 }
