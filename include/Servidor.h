@@ -90,11 +90,11 @@ class Servidor{
     bool verServ_participantes(unsigned int id);
 
     /**
-     * Método Get para pegar os usuários participantes de um servidor
+     * Método para imprimir os usuários participantes de um servidor
      * @param vector vector contendo referências ao usuários cadastrados no sistema
      * @return string contendo o Id de participantes do servidor
      */
-    std::string getServ_participantes(std::vector<Usuario*> &user);
+    std::string imprimeServ_participantes(std::vector<Usuario*> &user);
     
     /**
      * Método Seter de participantes
@@ -103,16 +103,30 @@ class Servidor{
     void setServ_participantes(unsigned int id);
 
     /**
+     * Método para pegar o id do canal de texto
+     * @param string nome para procurar o canal correspondente
+     * @return int contendo o id
+     */
+    int getServ_canaisTextoId(std::string nome);
+
+    /**
      * Método para pegar o tamanho do vector de canais de texto
      * @return int contendo o tamanho do vector de canais de texto
      */
     int getServ_canaisTextoSize();
 
     /**
-     * Método para pegar os Canais de texto do servidor
+     * Método para verificar se existe o canal de texto
+     * @param string nome do canal a ser verificado se existe
+     * @return true caso exista, falso caso não
+     */
+    bool verServ_canalTexto(std::string nome);
+
+    /**
+     * Método para imprimir os Canais de texto do servidor
      * @return string contendo os canais de texto do servidor
      */
-    std::string getServ_canaisTexto();
+    std::string imprimeServ_canaisTexto();
 
     /**
      * Método para preencher o vector de canais de texto
