@@ -34,7 +34,6 @@ void Sistema::teste(){
 }
 
 //create_user OK
-//checkin 1 ok
 string Sistema::create_user (const string email, const string senha, const string nome){
 	Usuario *user = new Usuario(email, senha, nome, m_usuarios.size()+1);
 
@@ -148,8 +147,6 @@ string Sistema::disconnect(int id){
 }
 
 //create_server OK
-//checkin 2, vou considerar 0,7 uma vez que sua implementação da classe servidor está diferente
-//do documento de especificação!
 string Sistema::create_server(int id, const string nome){
 
 	if(m_usuariosLogados.empty()){
@@ -432,6 +429,7 @@ string Sistema::list_participants(int id){
 /*
 	Aqui tá com um bug que só aparece quando um usuário está em mais de um servidor e cria
 	canais em ambos os servidores
+	------CORRIGIDO DEPOIS QUE CORRIGIU A create_channel()-------
 */
 string Sistema::list_channels(int id){
 
@@ -450,7 +448,11 @@ string Sistema::list_channels(int id){
 	return "Usuário não está visualizando nenhum servidor";
 }
 
-//create_channel TALVEZ OK
+//create_channel 
+/*
+	Bug que se um usuário possui 2 servidores, ele só cria canais para o primeiro
+	servidor dele. -------------CORRIGIDO----------------
+*/
 string Sistema::create_channel(int id, const string nome){
 
 	auto logado = m_usuariosLogados.find(id);
@@ -459,14 +461,21 @@ string Sistema::create_channel(int id, const string nome){
 		return "Usuário não logado";
 	}
 
+
+	for(auto verServ = m_servidores.begin(); verServ != m_servidores.end(); verServ++){
+		if(verServ -> verServ_canalTexto(nome) && logado -> second.first == verServ -> getServ_Id()){
+			return "Já existe uma canal de texto com nome \'"+ nome +"\'";
+		}
+	}
+
 	for(auto itServ = m_servidores.begin(); itServ != m_servidores.end(); itServ++){
-		for(int i = 0; i < m_usuarios.size(); i++){
-			if(m_usuarios[i] -> getId() == logado -> first){
-				if(itServ -> verServ_participantes(logado -> first)){
-					CanalTexto canal(itServ -> getServ_canaisTextoSize() + 1, nome, m_usuarios[i]);
+		if(itServ -> getServ_Id() == logado -> second.first){	
+			for(int i = 0; i < m_usuarios.size(); i++){
+				if(m_usuarios[i] -> getId() == logado -> first){
+					CanalTexto canal(itServ -> getServ_canaisTextoSize()+1, nome, m_usuarios[i]);
 					itServ -> setServ_canaisTexto(canal);
 
-					return "Canal \'"+ canal.getCh_Nome() +"\'criado";
+					return "Canal \'"+ canal.getCh_Nome() + "\' criado";
 				}
 			}
 		}
@@ -480,6 +489,9 @@ string Sistema::remove_channel(int id, const string nome){
 }
 
 //enter_channel OK
+/*
+	COM A CORREÇÃO DA CREATE_CHANNEL, CONSERTOU O BUG DAQUI
+*/
 string Sistema::enter_channel(int id, const string nome){
 
 	auto logado = m_usuariosLogados.find(id);
@@ -496,9 +508,9 @@ string Sistema::enter_channel(int id, const string nome){
 					teste();
 					return "Entrou no canal \'"+ nome + "\'";
 				}
-			}
-			else{
-				return "Usuário já está no canal \'"+ nome +"\'"; 
+				else{
+					return "Usuário já está no canal \'"+ nome +"\'"; 
+				}
 			}
 		}
 	}
@@ -506,8 +518,36 @@ string Sistema::enter_channel(int id, const string nome){
 	return "canal \'"+ nome +"\' não existe";
 }
 
-string Sistema::leave_channel(int id) {
-	return "leave_channel NÃO IMPLEMENTADO";
+//leave_channel OK
+string Sistema::leave_channel(int id){
+
+	auto logado = m_usuariosLogados.find(id);
+
+	if(logado == m_usuariosLogados.end()){
+		return "Usuário não logado";
+	}
+
+	if(logado -> second.first == 0){
+		return "Usuário não está em servidor nenhum";
+	}
+
+	unsigned int l_idCh;
+	if(logado -> second.second != 0){
+		for(Usuario* user : m_usuarios){
+			if(user -> getId() == id){
+				for(Servidor serv : m_servidores){
+					if(serv.getServ_Id() == logado -> second.first){
+						l_idCh = logado -> second.second;
+						logado -> second.second = 0;
+						teste();
+						return "Usuário "+ user -> getNome() +" saiu do canal \'" + serv.getServ_canaisTextoNome(l_idCh) + "\'";
+					}
+				}
+			}
+		}	
+	}
+
+	return "Usuário não está visualizando nenhum canal";
 }
 
 string Sistema::send_message(int id, const string mensagem) {
