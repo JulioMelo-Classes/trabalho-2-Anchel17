@@ -110,6 +110,13 @@ class Servidor{
     int getServ_canaisTextoId(std::string nome);
 
     /**
+     * Método para pegar o nome de um canal
+     * @param unsigned int id do canal para procurar o nome
+     * @return string contendo o nome do canal
+     */
+    std::string getServ_canaisTextoNome(unsigned int id);
+
+    /**
      * Método para pegar o tamanho do vector de canais de texto
      * @return int contendo o tamanho do vector de canais de texto
      */
