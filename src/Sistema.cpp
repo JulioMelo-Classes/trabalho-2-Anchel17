@@ -34,6 +34,7 @@ void Sistema::teste(){
 }
 
 //create_user OK
+//checkin 1 ok
 string Sistema::create_user (const string email, const string senha, const string nome){
 	Usuario *user = new Usuario(email, senha, nome, m_usuarios.size()+1);
 
@@ -147,6 +148,8 @@ string Sistema::disconnect(int id){
 }
 
 //create_server OK
+//checkin 2, vou considerar 0,7 uma vez que sua implementação da classe servidor está diferente
+//do documento de especificação!
 string Sistema::create_server(int id, const string nome){
 
 	if(m_usuariosLogados.empty()){
