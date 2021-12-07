@@ -87,6 +87,15 @@ int Servidor::getServ_canaisTextoId(string nome){
     return 0;
 }
 
+string Servidor::getServ_canaisTextoNome(unsigned int id){
+    for(CanalTexto canal : CanaisTexto){
+        if(canal.getCh_Id() == id){
+            return canal.getCh_Nome();
+        }
+    }
+    return "";
+}
+
 int Servidor::getServ_canaisTextoSize(){
     return this -> CanaisTexto.size();
 }
