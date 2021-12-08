@@ -484,7 +484,38 @@ string Sistema::create_channel(int id, const string nome){
 	return "Usuário não está visualizando nenhum servidor";
 }
 
+/*
+	ACONTECEU 1 CASO DE SEGMENTATION FAULT, NÃO LEMBRO
+	QUAL O CASO QUE ISSO ACONTECEU, FIZ NOVOS TESTES
+	E DEU CERTO
+*/
 string Sistema::remove_channel(int id, const string nome){
+
+	auto logado = m_usuariosLogados.find(id);
+
+	if(logado == m_usuariosLogados.end()){
+		return "Usuário não logado";
+	}
+
+	for(auto itServ = m_servidores.begin(); itServ != m_servidores.end(); itServ++){
+		if(itServ -> getServ_canaisTextoNome(itServ -> getServ_canaisTextoId(nome)) == nome){
+			if(itServ -> getServ_dono() -> getId() == id || itServ -> getServ_canaisTextoDono(nome) == id){
+				//coloca os usuários logados que estavam vendo o canal no servidor para 0
+				for(auto verLogado = m_usuariosLogados.begin(); verLogado != m_usuariosLogados.end(); verLogado++){
+					if(verLogado -> second.second == itServ -> getServ_canaisTextoId(nome)){
+						verLogado -> second.second = 0;
+					}
+				}
+
+				itServ -> eraseServ_Canal(itServ -> getServ_canaisTextoId(nome));
+				return "Canal \'"+ nome +"\' excluído com sucesso";
+			}
+			else{
+				return "Você não é dono do servidor nem do canal, você não pode excluir este canal!"
+			}
+		}
+	}
+
 	return "remove_channel NÃO IMPLEMENTADO";
 }
 
@@ -550,7 +581,7 @@ string Sistema::leave_channel(int id){
 	return "Usuário não está visualizando nenhum canal";
 }
 
-string Sistema::send_message(int id, const string mensagem) {
+string Sistema::send_message(int id, const string mensagem){
 	return "send_message NÃO IMPLEMENTADO";
 }
 
