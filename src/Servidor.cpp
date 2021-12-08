@@ -122,3 +122,20 @@ string Servidor::imprimeServ_canaisTexto(){
 void Servidor::setServ_canaisTexto(CanalTexto canaisTexto){
     this -> CanaisTexto.push_back(canaisTexto);
 }
+
+unsigned int Servidor::getServ_canaisTextoDono(string nome){
+    for(CanalTexto canal : CanaisTexto){
+        if(canal.getCh_Nome() == nome){
+            return canal.getCh_Dono() -> getId();
+        }
+    }
+    return 0;
+}
+
+void Servidor::eraseServ_Canal(int id){
+    for(auto itCh = CanaisTexto.begin(); itCh != CanaisTexto.end(); itCh++){
+        if(itCh -> getCh_Id() == id){
+            CanaisTexto.erase(itCh);
+        }
+    }
+}
