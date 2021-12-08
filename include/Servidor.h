@@ -140,6 +140,19 @@ class Servidor{
      * @param CanalTexto objeto a ser armazenado no vector de canais de texto
      */
     void setServ_canaisTexto(CanalTexto canaisTexto);
+
+    /**
+     * Método para pegar o dono do canal
+     * @param string contendo o nome do servidor
+     * @return unsigned int id do dono do canal
+     */
+    unsigned int getServ_canaisTextoDono(std::string nome);
+
+    /**
+     * Método para excluir o canal do servidor
+     * @param int id do canal a ser excluido
+     */
+    void eraseServ_Canal(int id);
 };
 
 #endif
