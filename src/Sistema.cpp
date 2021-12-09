@@ -8,6 +8,7 @@ using namespace std;
 #include "../include/Usuario.h"
 #include "../include/Servidor.h"
 #include "../include/CanalTexto.h"
+#include "../include/Mensagem.h"
 
 /* COMANDOS */
 string Sistema::quit() {
@@ -106,7 +107,7 @@ std::string Sistema::delete_user (const std::string email, const std::string sen
 				return "Usuário deletado";
 			}
 
-			teste();
+			//teste();
 		}
 
 		return "Usuário não cadastrado";
@@ -125,7 +126,7 @@ string Sistema::login(const string email, const string senha){
 			}
 
 			m_usuariosLogados.insert({m_usuarios[i] -> getId(), {0, 0}});
-			teste();
+			//teste();
 			return "Logado como " + m_usuarios[i] -> getEmail();
 		}
 	}
@@ -139,7 +140,7 @@ string Sistema::disconnect(int id){
 	if(!m_usuariosLogados.empty() && id != 0){
 		auto it = m_usuariosLogados.find(id);
 		m_usuariosLogados.erase(it);
-		teste();
+		//teste();
 		return "Usuário desconectado";
 	}
 
@@ -270,7 +271,7 @@ string Sistema::remove_server(int id, const string nome){
 				}
 	
 				m_servidores.erase(it);
-				teste();
+				//teste();
 				return "Servidor removido com sucesso";
 			}
 			else{
@@ -307,7 +308,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 						logado -> second.first = it -> getServ_Id();
 						//usuário entra visualizando nenhum canal
 						logado -> second.second = 0;
-						teste();
+						//teste();
 						return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
 					}
 				}
@@ -332,7 +333,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 								//usuário entra visualizando nenhum canal
 								logado -> second.second = 0;
 								
-								teste();
+								//teste();
 								return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
 							}
 						}
@@ -348,7 +349,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 			//se o servidor não precisa de código de convite
 			else{
 				if(logado -> second.first == it -> getServ_Id()){
-					teste();
+					//teste();
 					return "Usuário já está no servidor";
 				}
 
@@ -364,7 +365,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 						//usuário entra visualizando nenhum canal
 						logado -> second.second = 0;
 			
-						teste();
+						//teste();
 						return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
 					}
 				}
@@ -394,7 +395,7 @@ string Sistema::leave_server(int id, const string nome){
 				logado -> second.second = 0;
 				it -> eraseServ_participante(logado -> first);
 
-				teste();
+				//teste();
 				return "Saiu do servidor \'" + it -> getServ_Nome() + "\'";
 			}
 			else{
@@ -511,7 +512,7 @@ string Sistema::remove_channel(int id, const string nome){
 				return "Canal \'"+ nome +"\' excluído com sucesso";
 			}
 			else{
-				return "Você não é dono do servidor nem do canal, você não pode excluir este canal!"
+				return "Você não é dono do servidor nem do canal, você não pode excluir este canal!";
 			}
 		}
 	}
@@ -536,7 +537,7 @@ string Sistema::enter_channel(int id, const string nome){
 			if(logado -> second.first == itServ -> getServ_Id()){
 				if(logado -> second.second != itServ -> getServ_canaisTextoId(nome)){
 					logado -> second.second = itServ -> getServ_canaisTextoId(nome);
-					teste();
+					//teste();
 					return "Entrou no canal \'"+ nome + "\'";
 				}
 				else{
@@ -570,7 +571,7 @@ string Sistema::leave_channel(int id){
 					if(serv.getServ_Id() == logado -> second.first){
 						l_idCh = logado -> second.second;
 						logado -> second.second = 0;
-						teste();
+						//teste();
 						return "Usuário "+ user -> getNome() +" saiu do canal \'" + serv.getServ_canaisTextoNome(l_idCh) + "\'";
 					}
 				}
@@ -581,11 +582,54 @@ string Sistema::leave_channel(int id){
 	return "Usuário não está visualizando nenhum canal";
 }
 
+//sendo implementada...
 string Sistema::send_message(int id, const string mensagem){
-	return "send_message NÃO IMPLEMENTADO";
+
+	auto logado = m_usuariosLogados.find(id);
+
+	if(logado == m_usuariosLogados.end()){
+		return "Usuário não logado";
+	}
+
+	if(logado -> second.second == 0){
+		return "Usuário não está visualizando nenhum canal";
+	}
+
+	for(auto itServ = m_servidores.begin(); itServ != m_servidores.end(); itServ++){
+		if(logado -> second.first == itServ -> getServ_Id()){
+			itServ -> add_msg(logado -> first, logado -> second.second, mensagem, m_usuarios);
+
+			return "Mensagem enviada ao canal";
+		}
+	}
+
+
+	return "Usuário não está visualizando nenhum servidor";
 }
 
-string Sistema::list_messages(int id) {
-	return "list_messages NÃO IMPLEMENTADO";
+string Sistema::list_messages(int id){
+
+	auto logado = m_usuariosLogados.find(id);
+
+	if(logado == m_usuariosLogados.end()){
+		return "Usuário não logado";
+	}
+
+	if(logado -> second.second == 0){
+		return "Usuário não está visualizando nenhum canal";
+	}
+
+	for(auto itServ = m_servidores.begin(); itServ != m_servidores.end(); itServ++){
+		if(itServ -> getServ_Id() == logado -> second.first){
+			if(itServ -> imprime_msg(logado -> second.second, m_usuarios) == ""){
+				return "Nenhuma mensagem para visualizar";
+			}
+			else{
+				return itServ -> imprime_msg(logado -> second.second, m_usuarios);
+			}
+		}
+	}
+
+	return "Usuário não está visualizando servidor algum";
 }
 
