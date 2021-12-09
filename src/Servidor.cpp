@@ -4,6 +4,7 @@
 #include "../include/Servidor.h"
 #include "../include/Usuario.h"
 #include "../include/Sistema.h"
+#include "../include/Mensagem.h"
 
 using namespace std;
 
@@ -138,4 +139,28 @@ void Servidor::eraseServ_Canal(int id){
             CanaisTexto.erase(itCh);
         }
     }
+}
+
+void Servidor::add_msg(unsigned int userId, unsigned int chId, string mensagem, vector<Usuario*> &user){
+    for(int i = 0; i < user.size(); i++){
+        if(user[i] -> getId() == userId){
+            for(auto itCh = CanaisTexto.begin(); itCh != CanaisTexto.end(); itCh++){
+                if(itCh -> getCh_Id() == chId){
+                    Mensagem msg(chId, user[i], mensagem);
+
+                    itCh -> setCh_msg(msg);
+                }
+            }
+        }
+    }
+}
+
+std::string Servidor::imprime_msg(unsigned int chId, vector<Usuario*> &user){
+    for(CanalTexto canal : CanaisTexto){
+        if(canal.getCh_Id() == chId){
+            return canal.getCh_msg(user);
+        }
+    }
+
+    return "";
 }
