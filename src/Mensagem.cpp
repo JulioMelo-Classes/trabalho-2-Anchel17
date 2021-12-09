@@ -1,10 +1,27 @@
 #include <string>
+#include <ctime>
 
 #include "../include/Mensagem.h"
 
 using namespace std;
 
-Mensagem::Mensagem(unsigned int id, Usuario* enviadaPor);
+Mensagem::Mensagem(unsigned int id, Usuario* enviadaPor, string msg){
+    int mes;
+    int ano;
+
+    time_t t;
+    struct tm *h;
+
+    time(&t);
+    h = localtime(&t);
+    mes = (h -> tm_mon) + 1;
+    ano = (h -> tm_year) + 1900;
+
+    this -> msg_DataHora = to_string(h -> tm_mday) + "/" + to_string(mes) + "/" + to_string(ano) + " - " + to_string(h -> tm_hour) + ":" + to_string(h -> tm_min);
+    this -> msg_id = id;
+    this -> msg_enviadaPor = enviadaPor;
+    this -> msg_conteudo = msg;
+}
 
 unsigned int Mensagem::getMsg_id(){
     return this -> msg_id;
@@ -14,11 +31,8 @@ std::string Mensagem::getMsg_DataHora(){
     return this -> msg_DataHora;
 }
 
-    /*
-        AQUI VAI OS MÉTODOS SETTERS DE DATAHORA E CONTEÚDO
-    */
 std::string Mensagem::getMsg_Conteudo(){
-    return this -> msg_conteúdo;
+    return this -> msg_conteudo;
 }
 
 Usuario* Mensagem::getMsg_EnviadaPor(){
