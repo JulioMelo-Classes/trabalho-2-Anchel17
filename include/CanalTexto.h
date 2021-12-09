@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../include/Usuario.h"
+#include "../include/Mensagem.h"
 
 class CanalTexto{
 
@@ -15,17 +16,17 @@ class CanalTexto{
 
         Usuario* ch_dono;       //<!Referência ao dono do canal
 
-        //vector<Mensagem> ch_mensagens;  //<!Vector de mensagens enviadas no canal
+        std::vector<Mensagem> ch_mensagens;  //<!Vector de mensagens enviadas no canal
 
     public:
 
     /**
      * Construtor da classe CanalTexto
-     * @param unsigned int id do canal
+     * @param int id do canal
      * @param string nome do canal
      * @param Usuario* referência ao dono do canal
      */
-    CanalTexto(unsigned int id, std::string nome, Usuario* dono);
+    CanalTexto(int id, std::string nome, Usuario* dono);
 
     /**
      * Método Get para id do canal
@@ -44,6 +45,19 @@ class CanalTexto{
      * @return referência ao dono do canal
      */
     Usuario* getCh_Dono();
+
+    /**
+     * Método para guardar uma mensagem
+     * @param Mensagem contendo as informações da mensagem
+     */
+    void setCh_msg(Mensagem msg);
+
+    /**
+     * Método para retornar as mensagens de um canal
+     * @param Usuario* Referência só para procurar o dono da mensagem
+     * @return string contendo mensagens enviadas de um canal
+     */
+    std::string getCh_msg(std::vector<Usuario*> &user);
 };
 
 #endif
