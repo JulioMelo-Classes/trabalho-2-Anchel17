@@ -153,6 +153,22 @@ class Servidor{
      * @param int id do canal a ser excluido
      */
     void eraseServ_Canal(int id);
+
+    /**
+     * Método para adicionar mensagens a um canal
+     * @param unsigned int userId é o id do usuário da mensagem
+     * @param unsigned int chId id do canal que vai receber a mensagem
+     * @param string mensagem a ser enviada
+     * @param vector Referência ao vector de usuários para setar quem enviou a mensagem
+     */
+    void add_msg(unsigned int userId, unsigned int chId, std::string mensagem, std::vector<Usuario*> &user);
+
+    /**
+     * Método para imprimir mensagens de um canal
+     * @param unsigned int contendo id do canal a ter as mensagens exibidas
+     * @param Usuario* referência ao para o vector de usuários
+     */
+    std::string imprime_msg(unsigned int chId, std::vector<Usuario*> &user);
 };
 
 #endif
