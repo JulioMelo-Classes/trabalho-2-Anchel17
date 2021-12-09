@@ -11,7 +11,7 @@ class Mensagem{
 
     std::string msg_DataHora;   //<!String que vai conter a data e hora de uma mensagem enviada
 
-    std::string msg_conteúdo;   //<!Mensagem escrita
+    std::string msg_conteudo;   //<!Mensagem escrita
 
     Usuario* msg_enviadaPor;    //<!Referência ao usuário que enviou a mensagem
 
@@ -21,8 +21,9 @@ class Mensagem{
      * Construtor da classe mensagem
      * @param unsigned int id da mensagem
      * @param Usuario* referência ao usuário que enviou a mensagem
+     * @param string mensagem recebida
      */
-    Mensagem(unsigned int id, Usuario* enviadaPor);
+    Mensagem(unsigned int id, Usuario* enviadaPor, std::string msg);
 
     /**
      * Método para pegar o Id da mensagem
@@ -35,10 +36,6 @@ class Mensagem{
      * @return string contendo a data e hora de envio da mensagem
      */
     std::string getMsg_DataHora();
-
-    /*
-        AQUI VAI OS MÉTODOS SETTERS DE DATAHORA E CONTEÚDO
-    */
 
     /**
      * Método para pegar a mensagem
