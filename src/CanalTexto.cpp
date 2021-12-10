@@ -31,7 +31,6 @@ void CanalTexto::setCh_msg(Mensagem msg){
 string CanalTexto::getCh_msg(vector<Usuario*> &user){
     string retorno = "";
 
-
     for(auto itMsg = ch_mensagens.begin(); itMsg != ch_mensagens.end(); itMsg++){
         for(Usuario* u : user){
             if(u -> getNome() == itMsg -> getMsg_EnviadaPor() -> getNome()){
