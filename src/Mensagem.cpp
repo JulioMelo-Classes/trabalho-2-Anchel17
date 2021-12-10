@@ -27,11 +27,11 @@ unsigned int Mensagem::getMsg_id(){
     return this -> msg_id;
 }
 
-std::string Mensagem::getMsg_DataHora(){
+string Mensagem::getMsg_DataHora(){
     return this -> msg_DataHora;
 }
 
-std::string Mensagem::getMsg_Conteudo(){
+string Mensagem::getMsg_Conteudo(){
     return this -> msg_conteudo;
 }
 
