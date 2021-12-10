@@ -11,7 +11,7 @@ using namespace std;
 #include "../include/Mensagem.h"
 
 /* COMANDOS */
-string Sistema::quit() {
+string Sistema::quit(){
   return "Saindo...";
 }
 
@@ -21,17 +21,9 @@ void Sistema::teste(){
 	for(int i = 0; i < m_usuarios.size(); i++){
 		cout<<"Id: "<<m_usuarios[i] -> getId()<<endl;
 		cout<<"Nome: "<<m_usuarios[i] -> getNome()<<endl;
-		cout<<"Email: "<<m_usuarios[i] -> getEmail()<<endl;
-		cout<<"Senha: "<<m_usuarios[i] -> getSenha()<<endl;
+		//cout<<"Email: "<<m_usuarios[i] -> getEmail()<<endl;
+		//cout<<"Senha: "<<m_usuarios[i] -> getSenha()<<endl;
 	}
-	/*if(m_usuariosLogados.empty()){
-		cout<<"Não existem usuários logados"<<endl;
-	}
-	else{
-		for(auto it = m_usuariosLogados.begin(); it != m_usuariosLogados.end(); it++){
-			cout<<"ID: "<<it -> first<<" Servidor|canal: "<< it -> second.first<<"|"<< it -> second.second<<endl;
-		}
-	}*/
 }
 
 unsigned int Sistema::id_user(){
@@ -47,11 +39,12 @@ unsigned int Sistema::id_user(){
 	}
 }
 
+unsigned int Sistema::id_server(){
+	m_idServer++;
+	return this -> m_idServer;
+}
 
-//create_user OK
 string Sistema::create_user (const string email, const string senha, const string nome){
-	Usuario *user = new Usuario(email, senha, nome, id_user());
-
 	if(email == ""){
 		return "Por favor, digite um email";
 	}
@@ -64,22 +57,18 @@ string Sistema::create_user (const string email, const string senha, const strin
 		return "Por favor, digite o nome de usuário";
 	}
 
-	if(m_usuarios.empty()){
-
-		m_usuarios.push_back(user);
-		return "Usuário criado";
-	}
-	else{
-		for(int i = 0; i < m_usuarios.size(); i++){
-			if(email == m_usuarios[i] -> getEmail()){
-				return "Usuário já cadastrado";
-			}
+	for(int i = 0; i < m_usuarios.size(); i++){
+		if(email == m_usuarios[i] -> getEmail()){
+			return "Usuário já cadastrado";
 		}
-
-		m_usuarios.push_back(user);
-		teste();
-		return "usuário criado";
 	}
+
+	Usuario *user = new Usuario(email, senha, nome, id_user());
+
+	m_usuarios.push_back(user);
+	teste();
+	return "usuário criado";
+	
 	
 }
 
@@ -119,7 +108,6 @@ std::string Sistema::delete_user (const std::string email, const std::string sen
 	return "Usuário não cadastrado";
 }
 
-//login OK
 string Sistema::login(const string email, const string senha){
 
 	for(int i = 0; i < m_usuarios.size(); i++){
@@ -139,8 +127,13 @@ string Sistema::login(const string email, const string senha){
 	return "Usuário ou senha incorreto";
 }
 
-//disconnect OK
 string Sistema::disconnect(int id){
+
+	auto logado = m_usuariosLogados.find(id);
+
+	if(logado == m_usuariosLogados.end()){
+		return "Usuário já não está logado";
+	}
 
 	if(!m_usuariosLogados.empty() && id != 0){
 		auto it = m_usuariosLogados.find(id);
@@ -152,7 +145,6 @@ string Sistema::disconnect(int id){
 	return "Usuário não logado!";
 }
 
-//create_server OK
 string Sistema::create_server(int id, const string nome){
 
 	if(m_usuariosLogados.empty()){
@@ -176,7 +168,7 @@ string Sistema::create_server(int id, const string nome){
 	//para achar o id do usuário que criou o servidor
 	for(int i = 0; i < m_usuarios.size(); i++){
 		if(m_usuarios[i] -> getId() == id){
-			Servidor server(m_usuarios[i], m_servidores.size()+1, nome);
+			Servidor server(m_usuarios[i], id_server(), nome);
 			m_servidores.push_back(server);
 			break;
 		}
@@ -185,7 +177,6 @@ string Sistema::create_server(int id, const string nome){
 	return "Servidor criado";
 }
 
-//set_server_desc OK
 string Sistema::set_server_desc(int id, const string nome, const string descricao){
 
 	auto it = m_usuariosLogados.find(id);
@@ -209,7 +200,6 @@ string Sistema::set_server_desc(int id, const string nome, const string descrica
 	return "Servidor não encontrado";
 }
 
-//set_server_invite_code OK
 string Sistema::set_server_invite_code(int id, const string nome, const string codigo){
 
 	auto l_user = m_usuariosLogados.find(id);
@@ -239,7 +229,6 @@ string Sistema::set_server_invite_code(int id, const string nome, const string c
 	return "Servidor não encontrado";
 }
 
-//lista servers OK
 string Sistema::list_servers(int id){
 	string l_retorno = "";
 
@@ -256,39 +245,45 @@ string Sistema::list_servers(int id){
 	return l_retorno;
 }
 
-//remove-server OK
 string Sistema::remove_server(int id, const string nome){
-	auto l_user = m_usuariosLogados.find(id);
-	//só para verificar se o usuário está logado
-	if(l_user == m_usuariosLogados.end()){
+	bool l_ehDono = false;
+
+	auto logado = m_usuariosLogados.find(id);
+
+	if(logado == m_usuariosLogados.end()){
 		return "Usuário não está logado";
 	}
 
-	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
-		if(it -> getServ_Nome() == nome){
-			if(it -> getServ_dono() -> getId() == id){
+	for(auto itServ = m_servidores.begin(); itServ != m_servidores.end(); itServ++){
+		if(itServ -> getServ_Nome() == nome){
+			//verifica se o usuário é dono do servidor
+			for(Usuario* user : m_usuarios){
+				if(itServ -> getServ_dono() == user){
+					l_ehDono = true;
+				}
+			}
+
+			if(l_ehDono){
 				//verifica se existem usuários visualizando o servidor a ser deletado
 				for(auto itLog = m_usuariosLogados.begin(); itLog != m_usuariosLogados.end(); itLog++){
-					if(itLog -> second.first == it -> getServ_Id()){
+					if(itLog -> second.first == itServ -> getServ_Id()){
 						itLog -> second.first = 0;
 						itLog -> second.second = 0;
 					}
 				}
-	
-				m_servidores.erase(it);
-				//teste();
+
+				m_servidores.erase(itServ);
 				return "Servidor removido com sucesso";
 			}
 			else{
-				return "Você não tem autorização para remover o servidor!";
+				return "Você não possui autorização para remover o servidor!";
 			}
 		}
 	}
-	
+
 	return "Servidor não encontrado";
 }
 
-//enter_server OK
 string Sistema::enter_server(int id, const string nome, const string codigo){	
 	auto logado = m_usuariosLogados.find(id);
 
@@ -381,7 +376,6 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 	return "Servidor não encontrado";
 }
 
-//leave_server OK
 string Sistema::leave_server(int id, const string nome){
 	auto logado = m_usuariosLogados.find(id);
 
@@ -412,7 +406,6 @@ string Sistema::leave_server(int id, const string nome){
 	return "Servidor não encontrado";
 }
 
-//list_participants OK
 string Sistema::list_participants(int id){
 	string retorno = "";
 
@@ -555,7 +548,6 @@ string Sistema::enter_channel(int id, const string nome){
 	return "canal \'"+ nome +"\' não existe";
 }
 
-//leave_channel OK
 string Sistema::leave_channel(int id){
 
 	auto logado = m_usuariosLogados.find(id);
@@ -587,7 +579,6 @@ string Sistema::leave_channel(int id){
 	return "Usuário não está visualizando nenhum canal";
 }
 
-//sendo implementada...
 string Sistema::send_message(int id, const string mensagem){
 
 	auto logado = m_usuariosLogados.find(id);
