@@ -17,26 +17,40 @@ string Sistema::quit() {
 
 //só para verificar algumas coisas, depois apago
 void Sistema::teste(){
-/*
+
 	for(int i = 0; i < m_usuarios.size(); i++){
 		cout<<"Id: "<<m_usuarios[i] -> getId()<<endl;
 		cout<<"Nome: "<<m_usuarios[i] -> getNome()<<endl;
 		cout<<"Email: "<<m_usuarios[i] -> getEmail()<<endl;
 		cout<<"Senha: "<<m_usuarios[i] -> getSenha()<<endl;
-	}*/
-	if(m_usuariosLogados.empty()){
+	}
+	/*if(m_usuariosLogados.empty()){
 		cout<<"Não existem usuários logados"<<endl;
 	}
 	else{
 		for(auto it = m_usuariosLogados.begin(); it != m_usuariosLogados.end(); it++){
 			cout<<"ID: "<<it -> first<<" Servidor|canal: "<< it -> second.first<<"|"<< it -> second.second<<endl;
 		}
-	}//*/
+	}*/
 }
+
+unsigned int Sistema::id_user(){
+	if(m_idUsuarioExcluido.empty()){
+		m_idUser++;
+		return this -> m_idUser;
+	}
+	
+	for(auto itId = m_idUsuarioExcluido.begin(); itId != m_idUsuarioExcluido.end(); itId++){
+		int l_id = *itId;
+		m_idUsuarioExcluido.erase(itId);
+		return l_id;
+	}
+}
+
 
 //create_user OK
 string Sistema::create_user (const string email, const string senha, const string nome){
-	Usuario *user = new Usuario(email, senha, nome, m_usuarios.size()+1);
+	Usuario *user = new Usuario(email, senha, nome, id_user());
 
 	if(email == ""){
 		return "Por favor, digite um email";
@@ -63,55 +77,46 @@ string Sistema::create_user (const string email, const string senha, const strin
 		}
 
 		m_usuarios.push_back(user);
+		teste();
 		return "usuário criado";
 	}
 	
 }
 
-//delete_user precisa ser modificado
+//delete_user sendo re-trabalhada
 std::string Sistema::delete_user (const std::string email, const std::string senha){
 	unsigned int l_id;
 
-	if(m_usuarios.empty()){
-		return "Não existem usuários cadastrados";
-	}
-	else{
-		for(int i = 0; i < m_usuarios.size(); i++){
-			if(m_usuarios[i] -> getEmail() == email){
-				l_id = m_usuarios[i] -> getId();
-			}
-
-			auto it = m_usuariosLogados.find(l_id);
-			
-			if(it != m_usuariosLogados.end()){
-				return "Por favor, desconecte o usuário para deletá-lo";
-			}
+	for(int i = 0; i < m_usuarios.size(); i++){
+		if(m_usuarios[i] -> getEmail() == email){
+			l_id = m_usuarios[i] -> getId();
 		}
 
-		for(int i = 0; i < m_usuarios.size(); i++){
-			if(email == m_usuarios[i] -> getEmail()){
-				m_usuarios.erase(m_usuarios.begin() + i);
-				
-				//isso aqui vai re-setar os Id de usuários após o usuário deletado
-				for(int j = 0; j < m_usuarios.size(); j++){
-					m_usuarios[j] -> re_setId(j+1);
-
-					//update no ID de usuários logados
-					m_usuariosLogados[j].first = m_usuarios[j] -> getId();
-				}
-				auto it = m_servidores.begin();
-
-				//apaga o id de um usuário que foi excluído do sistema, mas participava de um servidor
-				it -> eraseServ_participante(m_usuarios[i] -> getId());
-
-				return "Usuário deletado";
-			}
-
-			//teste();
+		auto it = m_usuariosLogados.find(l_id);
+		
+		if(it != m_usuariosLogados.end()){
+			return "Por favor, desconecte o usuário para deletá-lo";
 		}
 
-		return "Usuário não cadastrado";
+		for(auto itServ = m_servidores.begin(); itServ != m_servidores.end(); itServ++){
+			//verifica se o usuário a ser deletado é participante de algum servidor
+			if(itServ -> verServ_participantes(m_usuarios[i] -> getId())){
+				itServ -> eraseServ_participante(m_usuarios[i] -> getId());
+				break;
+			}
+		}
 	}
+
+	for(int i = 0; i < m_usuarios.size(); i++){
+		if(m_usuarios[i] -> getId() == l_id){
+			m_usuarios.erase(m_usuarios.begin() + i);
+			teste();
+			m_idUsuarioExcluido.push_back(l_id);
+			return "Usuário "+ email +" excluído";
+		}
+	}
+
+	return "Usuário não cadastrado";
 }
 
 //login OK
