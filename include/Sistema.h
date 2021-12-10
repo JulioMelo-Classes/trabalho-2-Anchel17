@@ -18,6 +18,10 @@ class Sistema {
 
 		std::map<int, std::pair<unsigned int, unsigned int>> m_usuariosLogados;		//<!mapeia usuários logados
 
+		std::vector<unsigned int> m_idUsuarioExcluido;	//<!Vector contendo ids de usuários excluidos
+
+		unsigned int m_idUser = 0;				//!<id do usuário
+
   	public:
 
 		/*! Encerra o funcionamento do Concordo, o programa termina ao executar este comando.
@@ -25,6 +29,12 @@ class Sistema {
 		*/
 		std::string quit();
 		void teste(); ///só para verificar se tá armazenando os usuários vou excluir isso depois
+
+		/**
+		 * Método para setar os ids de usuários
+		 * @return unsigned int contendo o id do usuário
+		 */
+		unsigned int id_user();
 
 		/*! Cria um usuário e retorna uma string de erro/sucesso 
 			@param email o email do usuário informado no comando create-user
