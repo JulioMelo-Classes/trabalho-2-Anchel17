@@ -20,7 +20,9 @@ class Sistema {
 
 		std::vector<unsigned int> m_idUsuarioExcluido;	//<!Vector contendo ids de usuários excluidos
 
-		unsigned int m_idUser = 0;				//!<id do usuário
+		unsigned int m_idUser = 0;			//!<id do usuário
+
+		unsigned int m_idServer = 0;		//<!id do servidor
 
   	public:
 
@@ -32,9 +34,15 @@ class Sistema {
 
 		/**
 		 * Método para setar os ids de usuários
-		 * @return unsigned int contendo o id do usuário
+		 * @return unsigned int com o id do usuário criado
 		 */
 		unsigned int id_user();
+
+		/**
+		 * Método para setar os ids de servidores
+		 * @return unsigned int com o id do servidor criado
+		 */
+		unsigned int id_server();
 
 		/*! Cria um usuário e retorna uma string de erro/sucesso 
 			@param email o email do usuário informado no comando create-user
