@@ -48,6 +48,7 @@ class Mensagem{
      * @return Usuario que enviou a mensagem
      */
     Usuario* getMsg_EnviadaPor();
+
 };
 
 #endif
