@@ -1,63 +1,54 @@
-#ifndef CANALTEXTO_H
-#define CANALTEXTO_H
+#ifndef MENSAGEM_H
+#define MENSAGEM_H
 
-#include <vector>
+#include "Usuario.h"
 
-#include "../include/Usuario.h"
-#include "../include/Mensagem.h"
-
-class CanalTexto{
+class Mensagem{
 
     private:
 
-        unsigned int ch_id;     //<!Id do canal
+    unsigned int msg_id;    //<!Id da mensagem
 
-        std::string ch_nome;    //<!Nome do canal
+    std::string msg_DataHora;   //<!String que vai conter a data e hora de uma mensagem enviada
 
-        Usuario* ch_dono;       //<!Referência ao dono do canal
+    std::string msg_conteudo;   //<!Mensagem escrita
 
-        std::vector<Mensagem> ch_mensagens;  //<!Vector de mensagens enviadas no canal
+    Usuario* msg_enviadaPor;    //<!Referência ao usuário que enviou a mensagem
 
     public:
 
     /**
-     * Construtor da classe CanalTexto
-     * @param int id do canal
-     * @param string nome do canal
-     * @param Usuario* referência ao dono do canal
+     * Construtor da classe mensagem
+     * @param unsigned int id da mensagem
+     * @param Usuario* referência ao usuário que enviou a mensagem
+     * @param string mensagem recebida
      */
-    CanalTexto(int id, std::string nome, Usuario* dono);
+    Mensagem(unsigned int id, Usuario* enviadaPor, std::string msg);
 
     /**
-     * Método Get para id do canal
-     * @return id do canal
+     * Método para pegar o Id da mensagem
+     * @return id da mensagem
      */
-    unsigned int getCh_Id();
+    unsigned int getMsg_id();
 
     /**
-     * Método Get para o nome do canal
-     * @return Nome do canal
+     * Método para pegar a data e hora de envio da mensagem
+     * @return string contendo a data e hora de envio da mensagem
      */
-    std::string getCh_Nome();
+    std::string getMsg_DataHora();
 
     /**
-     * Método Get para o dono do canal
-     * @return referência ao dono do canal
+     * Método para pegar a mensagem
+     * @return string contendo a mensagem
      */
-    Usuario* getCh_Dono();
+    std::string getMsg_Conteudo();
 
     /**
-     * Método para guardar uma mensagem
-     * @param Mensagem contendo as informações da mensagem
+     * Método para retornar quem enviou a mensagem
+     * @return Usuario que enviou a mensagem
      */
-    void setCh_msg(Mensagem msg);
+    Usuario* getMsg_EnviadaPor();
 
-    /**
-     * Método para retornar as mensagens de um canal
-     * @param Usuario* Referência só para procurar o dono da mensagem
-     * @return string contendo mensagens enviadas de um canal
-     */
-    std::string getCh_msg(std::vector<Usuario*> &user);
 };
 
 #endif
