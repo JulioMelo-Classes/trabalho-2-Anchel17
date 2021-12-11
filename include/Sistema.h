@@ -18,8 +18,6 @@ class Sistema {
 
 		std::map<int, std::pair<unsigned int, unsigned int>> m_usuariosLogados;		//<!mapeia usuários logados
 
-		std::vector<unsigned int> m_idUsuarioExcluido;	//<!Vector contendo ids de usuários excluidos
-
 		unsigned int m_idUser = 0;			//!<id do usuário
 
 		unsigned int m_idServer = 0;		//<!id do servidor
