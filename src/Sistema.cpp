@@ -27,16 +27,8 @@ void Sistema::teste(){
 }
 
 unsigned int Sistema::id_user(){
-	if(m_idUsuarioExcluido.empty()){
-		m_idUser++;
-		return this -> m_idUser;
-	}
-	
-	for(auto itId = m_idUsuarioExcluido.begin(); itId != m_idUsuarioExcluido.end(); itId++){
-		int l_id = *itId;
-		m_idUsuarioExcluido.erase(itId);
-		return l_id;
-	}
+	m_idUser++;
+	return this -> m_idUser;
 }
 
 unsigned int Sistema::id_server(){
@@ -100,7 +92,6 @@ std::string Sistema::delete_user (const std::string email, const std::string sen
 		if(m_usuarios[i] -> getId() == l_id){
 			m_usuarios.erase(m_usuarios.begin() + i);
 			teste();
-			m_idUsuarioExcluido.push_back(l_id);
 			return "Usuário "+ email +" excluído";
 		}
 	}
