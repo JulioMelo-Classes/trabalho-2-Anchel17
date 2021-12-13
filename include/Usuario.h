@@ -52,9 +52,9 @@ class Usuario{
         unsigned int getId();
 
         /**
-         * Método para re-setar o Id de usuários após o excluído
+         * Método para tornar o usuário anônimo
          */
-        void re_setId(unsigned int id);
+        void setUserAnonimo();
 };
 
 #endif
