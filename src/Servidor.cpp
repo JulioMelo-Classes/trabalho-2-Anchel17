@@ -137,6 +137,7 @@ void Servidor::eraseServ_Canal(int id){
     for(auto itCh = CanaisTexto.begin(); itCh != CanaisTexto.end(); itCh++){
         if(itCh -> getCh_Id() == id){
             CanaisTexto.erase(itCh);
+            break;
         }
     }
 }
@@ -163,4 +164,36 @@ std::string Servidor::imprime_msg(unsigned int chId, vector<Usuario*> &user){
     }
 
     return "";
+}
+
+void Servidor::verServ_chMsgs(Usuario* &user){
+    bool l_achou = false;
+
+    for(CanalTexto canal : CanaisTexto){
+        l_achou = canal.verCh_msgDono(user);
+        
+        if(l_achou){
+            break;
+        }
+    }
+}
+
+void Servidor::verServ_chDono(Usuario* &user){    
+    for(CanalTexto canal : CanaisTexto){
+        if(canal.getCh_Dono() == user){
+            canal.setCH_donoAnonimo();
+
+            //talvez não precisa desse break?
+            break;
+        }
+    }
+}
+
+void Servidor::setServ_donoAnonimo(vector<Usuario*> usuarios, Usuario* &user){
+    for(Usuario* usr : usuarios){
+        if(usr == user){
+            this -> serv_dono -> setUserAnonimo();
+            break;
+        }
+    }
 }
