@@ -169,6 +169,25 @@ class Servidor{
      * @param Usuario* referência ao para o vector de usuários
      */
     std::string imprime_msg(unsigned int chId, std::vector<Usuario*> &user);
+
+    /**
+     * Verifica se o usuário possui mensagens enviadas
+     * @param Usuario* referència a um usuário
+     */
+    void verServ_chMsgs(Usuario* &user);
+
+    /**
+     * Verifica se o usuário é dono de algum canal
+     * @param Usuario* referència a um usuário
+     */
+    void verServ_chDono(Usuario* &user);
+
+    /**
+     * Método para tornar um usuário excluido dono de servidor anônimo
+     * @param vector de usuários para achar o usuário dono
+     * @param Usuario* usuário a ser setado para anônimo
+     */
+    void setServ_donoAnonimo(std::vector<Usuario*> usuarios, Usuario* &user);
 };
 
 #endif
