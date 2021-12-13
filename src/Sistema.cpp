@@ -10,30 +10,40 @@ using namespace std;
 #include "../include/CanalTexto.h"
 #include "../include/Mensagem.h"
 
-/* COMANDOS */
-string Sistema::quit(){
-  return "Saindo...";
-}
-
-//só para verificar algumas coisas, depois apago
-void Sistema::teste(){
-
-	for(int i = 0; i < m_usuarios.size(); i++){
-		cout<<"Id: "<<m_usuarios[i] -> getId()<<endl;
-		cout<<"Nome: "<<m_usuarios[i] -> getNome()<<endl;
-		//cout<<"Email: "<<m_usuarios[i] -> getEmail()<<endl;
-		//cout<<"Senha: "<<m_usuarios[i] -> getSenha()<<endl;
-	}
-}
-
 unsigned int Sistema::id_user(){
-	m_idUser++;
-	return this -> m_idUser;
+	unsigned int l_id;
+
+	if(m_idsDeletados.empty()){
+		m_idUser++;
+		return this -> m_idUser;
+	}
+	else{
+		for(auto itId = m_idsDeletados.begin(); itId != m_idsDeletados.end(); itId++){
+			l_id = *itId;
+			m_idsDeletados.erase(itId);
+			return l_id;
+		}
+	}
 }
 
 unsigned int Sistema::id_server(){
 	m_idServer++;
 	return this -> m_idServer;
+}
+
+unsigned int Sistema::id_ch(){
+	m_idCh++;
+	return this -> m_idCh;
+}
+
+/* COMANDOS */
+
+string Sistema::quit(){
+	for(int i = 0; i < m_usuarios.size(); i++){
+		delete m_usuarios[i];
+	}
+
+  	return "Saindo...";
 }
 
 string Sistema::create_user (const string email, const string senha, const string nome){
@@ -58,18 +68,17 @@ string Sistema::create_user (const string email, const string senha, const strin
 	Usuario *user = new Usuario(email, senha, nome, id_user());
 
 	m_usuarios.push_back(user);
-	teste();
 	return "usuário criado";
-	
-	
 }
 
-//delete_user sendo re-trabalhada
 std::string Sistema::delete_user (const std::string email, const std::string senha){
 	unsigned int l_id;
+	string l_email;
+	bool l_achou = false;
 
 	for(int i = 0; i < m_usuarios.size(); i++){
 		if(m_usuarios[i] -> getEmail() == email){
+			l_email = m_usuarios[i] -> getEmail();
 			l_id = m_usuarios[i] -> getId();
 		}
 
@@ -82,16 +91,34 @@ std::string Sistema::delete_user (const std::string email, const std::string sen
 		for(auto itServ = m_servidores.begin(); itServ != m_servidores.end(); itServ++){
 			//verifica se o usuário a ser deletado é participante de algum servidor
 			if(itServ -> verServ_participantes(m_usuarios[i] -> getId())){
+				//verifica se o usuário a ser deletado possui mensagens enviadas em canais e exclui elas
+				itServ -> verServ_chMsgs(m_usuarios[i]);
+
+				//verifica se o usuário a ser deletado é dono de um canal, mas não enviou mensagem
+				itServ -> verServ_chDono(m_usuarios[i]);
+
+				//verifica se o usuário a ser deletado é dono de algum servidor
+				for(Servidor serv : m_servidores){
+					if(serv.getServ_dono() == m_usuarios[i]){
+						serv.setServ_donoAnonimo(m_usuarios, m_usuarios[i]);
+					}
+				}
+				
 				itServ -> eraseServ_participante(m_usuarios[i] -> getId());
+				l_achou = true;
 				break;
 			}
+		}
+		if(l_achou){
+			break;
 		}
 	}
 
 	for(int i = 0; i < m_usuarios.size(); i++){
-		if(m_usuarios[i] -> getId() == l_id){
+		if(m_usuarios[i] -> getEmail() == l_email && m_usuarios[i] -> getSenha() == senha){
+			m_idsDeletados.push_back(l_id);
 			m_usuarios.erase(m_usuarios.begin() + i);
-			teste();
+
 			return "Usuário "+ email +" excluído";
 		}
 	}
@@ -110,7 +137,6 @@ string Sistema::login(const string email, const string senha){
 			}
 
 			m_usuariosLogados.insert({m_usuarios[i] -> getId(), {0, 0}});
-			//teste();
 			return "Logado como " + m_usuarios[i] -> getEmail();
 		}
 	}
@@ -123,13 +149,12 @@ string Sistema::disconnect(int id){
 	auto logado = m_usuariosLogados.find(id);
 
 	if(logado == m_usuariosLogados.end()){
-		return "Usuário já não está logado";
+		return "Usuário não logado";
 	}
 
 	if(!m_usuariosLogados.empty() && id != 0){
 		auto it = m_usuariosLogados.find(id);
 		m_usuariosLogados.erase(it);
-		//teste();
 		return "Usuário desconectado";
 	}
 
@@ -138,28 +163,28 @@ string Sistema::disconnect(int id){
 
 string Sistema::create_server(int id, const string nome){
 
-	if(m_usuariosLogados.empty()){
-		return "Nenhum usuário logado, por favor logue em uma conta.";
+	auto l_user = m_usuariosLogados.find(id);
+
+	if(l_user == m_usuariosLogados.end()){
+		return "Usuário não logado!";
 	}
-	else{
-		auto l_user = m_usuariosLogados.find(id);
 
-		if(l_user == m_usuariosLogados.end()){
-			return "Usuário não logado!";
-		}
-
-		for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
-			if(it -> getServ_Nome() == nome){
-				return "Já existe um servidor com esse nome";
-			}
+	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
+		if(it -> getServ_Nome() == nome){
+			return "Já existe um servidor com esse nome";
 		}
 	}
+	
 	
 	
 	//para achar o id do usuário que criou o servidor
 	for(int i = 0; i < m_usuarios.size(); i++){
 		if(m_usuarios[i] -> getId() == id){
 			Servidor server(m_usuarios[i], id_server(), nome);
+			
+			//usuário criador do servidor já entra como participante
+			server.setServ_participantes(id);
+			
 			m_servidores.push_back(server);
 			break;
 		}
@@ -169,11 +194,10 @@ string Sistema::create_server(int id, const string nome){
 }
 
 string Sistema::set_server_desc(int id, const string nome, const string descricao){
-
 	auto it = m_usuariosLogados.find(id);
 
 	if(it == m_usuariosLogados.end()){
-		return "Usuário não está logado";
+		return "Usuário não logado";
 	}
 
 	for(auto itServer = m_servidores.begin(); itServer != m_servidores.end(); itServer++){
@@ -183,7 +207,7 @@ string Sistema::set_server_desc(int id, const string nome, const string descrica
 				return "Descrição do servidor \'" + nome + "\' alterada";
 			}
 			else{
-				return "Você não possui autorização para alterar a descrição desta servidor!";
+				return "Você não possui autorização para alterar a descrição deste servidor!";
 			}
 		}
 	}
@@ -192,7 +216,6 @@ string Sistema::set_server_desc(int id, const string nome, const string descrica
 }
 
 string Sistema::set_server_invite_code(int id, const string nome, const string codigo){
-
 	auto l_user = m_usuariosLogados.find(id);
 	
 	//verifica se o usuário está logado
@@ -202,10 +225,11 @@ string Sistema::set_server_invite_code(int id, const string nome, const string c
 	
 	for(auto it = m_servidores.begin(); it != m_servidores.end(); it++){
 		if(it -> getServ_Nome() == nome){
+
 			if(it -> getServ_dono() -> getId() == id){
 				it -> setServ_codigoConvite(codigo);
 				if(codigo != ""){
-					return "Código de convite do servidor \'"+ it -> getServ_Nome() +"\'modificado com sucesso";
+					return "Código de convite do servidor \'"+ it -> getServ_Nome() +"\' modificado com sucesso";
 				}
 				else{
 					return "Código de convite do servidor \'"+ it -> getServ_Nome() +"\' removido";
@@ -247,14 +271,7 @@ string Sistema::remove_server(int id, const string nome){
 
 	for(auto itServ = m_servidores.begin(); itServ != m_servidores.end(); itServ++){
 		if(itServ -> getServ_Nome() == nome){
-			//verifica se o usuário é dono do servidor
-			for(Usuario* user : m_usuarios){
-				if(itServ -> getServ_dono() == user){
-					l_ehDono = true;
-				}
-			}
-
-			if(l_ehDono){
+			if(itServ -> getServ_dono() -> getId() == id){
 				//verifica se existem usuários visualizando o servidor a ser deletado
 				for(auto itLog = m_usuariosLogados.begin(); itLog != m_usuariosLogados.end(); itLog++){
 					if(itLog -> second.first == itServ -> getServ_Id()){
@@ -299,7 +316,6 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 						logado -> second.first = it -> getServ_Id();
 						//usuário entra visualizando nenhum canal
 						logado -> second.second = 0;
-						//teste();
 						return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
 					}
 				}
@@ -324,7 +340,6 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 								//usuário entra visualizando nenhum canal
 								logado -> second.second = 0;
 								
-								//teste();
 								return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
 							}
 						}
@@ -340,7 +355,6 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 			//se o servidor não precisa de código de convite
 			else{
 				if(logado -> second.first == it -> getServ_Id()){
-					//teste();
 					return "Usuário já está no servidor";
 				}
 
@@ -356,7 +370,6 @@ string Sistema::enter_server(int id, const string nome, const string codigo){
 						//usuário entra visualizando nenhum canal
 						logado -> second.second = 0;
 			
-						//teste();
 						return "Entrou no servidor \'" + it -> getServ_Nome() + "\' com sucesso";
 					}
 				}
@@ -385,7 +398,6 @@ string Sistema::leave_server(int id, const string nome){
 				logado -> second.second = 0;
 				it -> eraseServ_participante(logado -> first);
 
-				//teste();
 				return "Saiu do servidor \'" + it -> getServ_Nome() + "\'";
 			}
 			else{
@@ -415,12 +427,6 @@ string Sistema::list_participants(int id){
 	return "O usuário não está visualizando nenhum servidor";
 }
 
-//list_channels
-/*
-	Aqui tá com um bug que só aparece quando um usuário está em mais de um servidor e cria
-	canais em ambos os servidores
-	------CORRIGIDO DEPOIS QUE CORRIGIU A create_channel()-------
-*/
 string Sistema::list_channels(int id){
 
 	auto logado = m_usuariosLogados.find(id);
@@ -438,11 +444,6 @@ string Sistema::list_channels(int id){
 	return "Usuário não está visualizando nenhum servidor";
 }
 
-//create_channel 
-/*
-	Bug que se um usuário possui 2 servidores, ele só cria canais para o primeiro
-	servidor dele. -------------CORRIGIDO----------------
-*/
 string Sistema::create_channel(int id, const string nome){
 
 	auto logado = m_usuariosLogados.find(id);
@@ -462,7 +463,7 @@ string Sistema::create_channel(int id, const string nome){
 		if(itServ -> getServ_Id() == logado -> second.first){	
 			for(int i = 0; i < m_usuarios.size(); i++){
 				if(m_usuarios[i] -> getId() == logado -> first){
-					CanalTexto canal(itServ -> getServ_canaisTextoSize()+1, nome, m_usuarios[i]);
+					CanalTexto canal(id_ch(), nome, m_usuarios[i]);
 					itServ -> setServ_canaisTexto(canal);
 
 					return "Canal \'"+ canal.getCh_Nome() + "\' criado";
@@ -474,11 +475,6 @@ string Sistema::create_channel(int id, const string nome){
 	return "Usuário não está visualizando nenhum servidor";
 }
 
-/*
-	ACONTECEU 1 CASO DE SEGMENTATION FAULT, NÃO LEMBRO
-	QUAL O CASO QUE ISSO ACONTECEU, FIZ NOVOS TESTES
-	E DEU CERTO
-*/
 string Sistema::remove_channel(int id, const string nome){
 
 	auto logado = m_usuariosLogados.find(id);
@@ -496,12 +492,12 @@ string Sistema::remove_channel(int id, const string nome){
 						verLogado -> second.second = 0;
 					}
 				}
-
+				
 				itServ -> eraseServ_Canal(itServ -> getServ_canaisTextoId(nome));
 				return "Canal \'"+ nome +"\' excluído com sucesso";
 			}
 			else{
-				return "Você não é dono do servidor nem do canal, você não pode excluir este canal!";
+				return "Você não é dono do servidor nem do canal, então não pode excluir este canal!";
 			}
 		}
 	}
@@ -509,10 +505,6 @@ string Sistema::remove_channel(int id, const string nome){
 	return "remove_channel NÃO IMPLEMENTADO";
 }
 
-//enter_channel OK
-/*
-	COM A CORREÇÃO DA CREATE_CHANNEL, CONSERTOU O BUG DAQUI
-*/
 string Sistema::enter_channel(int id, const string nome){
 
 	auto logado = m_usuariosLogados.find(id);
@@ -526,7 +518,6 @@ string Sistema::enter_channel(int id, const string nome){
 			if(logado -> second.first == itServ -> getServ_Id()){
 				if(logado -> second.second != itServ -> getServ_canaisTextoId(nome)){
 					logado -> second.second = itServ -> getServ_canaisTextoId(nome);
-					//teste();
 					return "Entrou no canal \'"+ nome + "\'";
 				}
 				else{
@@ -559,7 +550,6 @@ string Sistema::leave_channel(int id){
 					if(serv.getServ_Id() == logado -> second.first){
 						l_idCh = logado -> second.second;
 						logado -> second.second = 0;
-						//teste();
 						return "Usuário "+ user -> getNome() +" saiu do canal \'" + serv.getServ_canaisTextoNome(l_idCh) + "\'";
 					}
 				}
@@ -589,7 +579,6 @@ string Sistema::send_message(int id, const string mensagem){
 			return "Mensagem enviada ao canal";
 		}
 	}
-
 
 	return "Usuário não está visualizando nenhum servidor";
 }
