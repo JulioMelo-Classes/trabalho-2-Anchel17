@@ -1,0 +1,67 @@
+create-user user1@gmail.com user1senha user1
+login user1@gmail.com senhaErrada
+login user1@gmail.com user1senha
+create-user user1@gmail.com user1senha user1
+create-user user2@hotmail.com user2senha2 user2
+login user2@hotmail.com senhaErrada2
+login user2@hotmail.com user2senha2
+create-server 1 server1.1
+create-server 1 server1.2
+create-server 1 server1.2
+create-server 2 server2.1
+create-server 2 server2.2
+list-servers 1
+remove-server 1 server2.1
+remove-server 2 server2.1
+list-servers 2
+set-server-invite-code 1 server1.1 pode
+set-server-invite-code 2 server1.1 naopode
+set-server-desc 1 server1.1 podesim
+set-server-desc 2 server1.1 numpodenao
+enter-server 1 server1.1
+enter-server 2 server1.1
+enter-server 2 server1.1 codigoErrado
+enter-server 2 server1.1 pode
+create-channel 1 ch1.1
+create-channel 1 ch1.2
+create-channel 2 ch1.3
+create-channel 2 ch1.4
+list-channels 1
+remove-channel 1 ch1.1
+remove-channel 1 ch1.3
+remove-channel 2 ch1.2
+remove-channel 2 ch1.4
+list-channels 2
+create-channel 2 ch1.4
+list-channels 2
+enter-channel 1 ch1.1
+enter-channel 1 ch1.2
+enter-channel 2 ch1.2
+send-message 1 opa, eae
+send-message 2 eae blz?
+send-message 1 suave
+list-messages 1
+enter-channel 1 ch1.4
+send-message 1 mensagem sozinha
+list-messages 1
+disconnect 1
+delete-user user1@gmail.com user1senha
+create-user user3@outlook.com user123 user3
+login user3@outlook.com user123
+set-server-desc 1 server1.1 naopode
+set-server-invite-code 1 server1.1 naopode
+enter-server 1 server1.1
+enter-server 1 server1.1 codigoErrado
+enter-server 1 server1.1 pode
+enter-channel 1 ch1.2
+list-messages 1
+send-message 1 opa, sou novo aqui
+send-message 1 tenho o id do antigo usuário
+send-message 1 mas sou o novo dono do id
+list-messages 1
+send-message 2 opa, seja bem-vindo
+send-message 2 agora é hora do professor avaliar kkk
+send-message 2 adeus
+list-messages 2
+list-servers 2
+quit
