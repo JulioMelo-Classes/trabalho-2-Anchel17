@@ -49,6 +49,10 @@ class Mensagem{
      */
     Usuario* getMsg_EnviadaPor();
 
+    /**
+     * método para tornar o dono da mensagem anônimo
+     */
+    void setMsg_donoAnonimo();
 };
 
 #endif
