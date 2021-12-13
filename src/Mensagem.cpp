@@ -1,7 +1,9 @@
 #include <string>
 #include <ctime>
+#include <iostream>
 
 #include "../include/Mensagem.h"
+#include "../include/Usuario.h"
 
 using namespace std;
 
@@ -37,4 +39,8 @@ string Mensagem::getMsg_Conteudo(){
 
 Usuario* Mensagem::getMsg_EnviadaPor(){
     return this -> msg_enviadaPor;
+}
+
+void Mensagem::setMsg_donoAnonimo(){
+    this -> msg_enviadaPor -> setUserAnonimo();
 }
