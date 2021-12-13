@@ -27,6 +27,7 @@ unsigned int Usuario::getId(){
     return m_id;
 }
 
-void Usuario::re_setId(unsigned int id){
-    this -> m_id = id;
+void Usuario::setUserAnonimo(){
+    this -> m_nome = "<usuário anônimo>";
+    this -> m_id = 0;
 }
