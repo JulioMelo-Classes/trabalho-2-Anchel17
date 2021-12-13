@@ -32,12 +32,31 @@ string CanalTexto::getCh_msg(vector<Usuario*> &user){
     string retorno = "";
 
     for(auto itMsg = ch_mensagens.begin(); itMsg != ch_mensagens.end(); itMsg++){
-        for(Usuario* u : user){
-            if(u -> getNome() == itMsg -> getMsg_EnviadaPor() -> getNome()){
-                retorno += u -> getNome() + "<" + itMsg -> getMsg_DataHora() + ">: "+   itMsg -> getMsg_Conteudo() + "\n";
-            }
-        }
+        retorno += itMsg -> getMsg_EnviadaPor() -> getNome() + "<" + itMsg -> getMsg_DataHora() + ">: "+   itMsg -> getMsg_Conteudo() + "\n";
     }
 
     return retorno;
+}
+
+bool CanalTexto::verCh_msgDono(Usuario* &user){
+    int l_contAchou = 0;
+
+    for(Mensagem msg : ch_mensagens){
+        if(msg.getMsg_EnviadaPor() == user){
+            l_contAchou++;
+
+            msg.setMsg_donoAnonimo();
+            return true;
+        }
+    }
+    
+    if(l_contAchou > 0){
+        return true;
+    }
+
+    return false;
+}
+
+void CanalTexto::setCH_donoAnonimo(){
+    this -> ch_dono -> setUserAnonimo();
 }
