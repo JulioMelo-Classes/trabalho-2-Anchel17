@@ -15,19 +15,19 @@ cmake --build .
 ## Para executar
 Com o programa compilado, você pode executar o Concordo das seguintes maneiras: 
 
-Você pode rodar o sistema digitando um comando de cada vez e teclando ENTER
+- Você pode rodar o sistema digitando um comando de cada vez e teclando ENTER
 ```console
 cd build
 ./concordo
 ```
 
-Ou pode criar um arquivo de texto com uma lista de comandos (um por linha) e executar o sistema redirecionando esse arquivo como entrada padrão:
+- pode criar um arquivo de texto com uma lista de comandos (um por linha) e executar o sistema redirecionando esse arquivo como entrada padrão:
 ```console
 cd build
 ./concordo < ../data/script_comandos.txt
 ```
 
-Por padrão, o Concordo vem com 2 arquivos de testes, para rodar um deles digite no seu console:
+- Por padrão, o Concordo vem com 2 arquivos de testes, para rodar um deles digite no seu console:
 ```console
 ./concordo < ../data/script_testes.txt
 ```
