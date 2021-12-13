@@ -14,7 +14,9 @@ class Sistema {
 	private:
 		std::vector<Usuario*> m_usuarios;	//<!Vector contendo referências a usuários cadastrados
 
-		std::vector<Servidor> m_servidores;	//<!Vector contendo os servidores criados
+		std::vector<Servidor> m_servidores;		//<!Vector contendo os servidores criados
+
+		std::vector<unsigned int> m_idsDeletados; 		//<!Vector contendo IDs de usuários deletados 
 
 		std::map<int, std::pair<unsigned int, unsigned int>> m_usuariosLogados;		//<!mapeia usuários logados
 
@@ -22,13 +24,14 @@ class Sistema {
 
 		unsigned int m_idServer = 0;		//<!id do servidor
 
+		unsigned int m_idCh = 0;			//<!id do canal de texto
+
   	public:
 
 		/*! Encerra o funcionamento do Concordo, o programa termina ao executar este comando.
 			@return uma string com a mensagem "Saindo.."
 		*/
 		std::string quit();
-		void teste(); ///só para verificar se tá armazenando os usuários vou excluir isso depois
 
 		/**
 		 * Método para setar os ids de usuários
@@ -41,6 +44,12 @@ class Sistema {
 		 * @return unsigned int com o id do servidor criado
 		 */
 		unsigned int id_server();
+
+		/**
+		 * Método para setar od ids dos canais de texto
+		 * @return unsigned int com o id do canal de texto
+		 */
+		unsigned int id_ch();
 
 		/*! Cria um usuário e retorna uma string de erro/sucesso 
 			@param email o email do usuário informado no comando create-user
